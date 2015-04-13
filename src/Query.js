@@ -1,6 +1,8 @@
 import { Query, Schema, Document } from 'livia';
 import OrientoQuery from 'oriento/lib/db/query';
+import debug from 'debug';
 
+const log = debug('livia-orientdb:query');
 const Operation = Query.Operation;
 
 export default class OrientDBQuery extends Query {
@@ -14,7 +16,7 @@ export default class OrientDBQuery extends Query {
 			throw new Error('Operation is not defined');
 		}
 
-		var query = new OrientoQuery(model.connection.db);
+		var query = new OrientoQuery(model.connection.adapter.db);
 		var q = query;
 
 		var target = this._target;
@@ -84,7 +86,7 @@ export default class OrientDBQuery extends Query {
 
 		if(!this._scalar && (operation === Operation.SELECT || operation === Operation.INSERT)) {
 			query = query.transform(function(record) {
-				return model._createDocument(record);
+				return model.createDocument(record);
 			});
 		}
 

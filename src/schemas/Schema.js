@@ -1,5 +1,5 @@
 import { Schema } from 'livia';
-import RIDType from '../types/rid';
+import RIDType from '../types/RID';
 
 function getDefaultClassName() {
 	return this._className;

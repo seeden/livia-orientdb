@@ -1,14 +1,52 @@
 import _ from 'lodash';
-import { Adapter } from 'livia';
+import { Adapter, Model } from 'livia';
 import Query from './Query';
+import Oriento from 'oriento';
+import { waterfall, each } from 'async';
+import extend from 'node.extend';
+import debug from 'debug';
+
+const log = debug('livia-orientdb:adapter');
 
 export default class OrientDBAdapter extends Adapter {
+	constructor(options, dbOptions) {
+		super(options);
+
+		if(typeof dbOptions === 'string') {
+			var dbName = dbOptions;
+			dbOptions = {
+				name: dbName
+			};
+		}
+
+		this._dbOptions = dbOptions;
+	}
+
+	get dbOptions() {
+		return this._dbOptions;
+	}
+
+	get db() {
+		return this._db;
+	}
+
+	get server() {
+		return this._server;
+	}	
+
+	connect(callback) {
+		this._server = Oriento(this.options);
+		this._db = this._server.use(this.dbOptions);
+
+		callback();
+	}
+
 	query (model, options) {
 		return new Query(model, options);
 	}
 
 	ensureIndex(model, OClass, callback) {
-		var db = model.db;
+		var db = this.db;
 		var className = model.name;
 		var schema = model.schema;
 
@@ -105,7 +143,7 @@ export default class OrientDBAdapter extends Adapter {
 	}
 
 	ensureClass(model, callback) {
-		var db = model.db;
+		var db = this.db;
 		var schema = model.schema;
 		var className = model.name;
 
@@ -243,7 +281,7 @@ export default class OrientDBAdapter extends Adapter {
 				return callback(err);
 			}
 
-			callback(null, this);
+			callback(null, model);
 		});
 	}
 };
