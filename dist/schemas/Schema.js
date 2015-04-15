@@ -17,7 +17,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var Schema = require("livia").Schema;
 
-var RIDType = _interopRequire(require("../types/RID"));
+var Type = _interopRequire(require("../types"));
 
 function getDefaultClassName() {
 	return this._className;
@@ -27,7 +27,7 @@ function prepareSchema(schema) {
 	schema.add({
 		"@type": { type: String, readonly: true, metadata: true, query: true, "default": "document" },
 		"@class": { type: String, readonly: true, metadata: true, query: true, "default": getDefaultClassName },
-		"@rid": { type: RIDType, readonly: true, metadata: true },
+		"@rid": { type: Type.RID, readonly: true, metadata: true },
 		"@version": { type: Number, readonly: true, metadata: true } });
 
 	schema.virtual("rid", { metadata: true }).get(function () {
@@ -56,6 +56,15 @@ var OrientSchema = (function (_Schema) {
 		getSubdocumentSchemaConstructor: {
 			value: function getSubdocumentSchemaConstructor() {
 				return OrientSchema;
+			}
+		},
+		convertType: {
+			value: function convertType(type) {
+				if (type.isDocumentClass) {
+					return Type.Linked;
+				}
+
+				return _get(Object.getPrototypeOf(OrientSchema.prototype), "convertType", this).call(this, type);
 			}
 		}
 	});
