@@ -13,16 +13,16 @@ var Type = require("livia").Type;
 	http://www.w3schools.com/js/js_numbers.asp
 */
 
-var LongType = (function (_Type) {
+var LongType = (function (_Type$Type) {
 	function LongType() {
 		_classCallCheck(this, LongType);
 
-		if (_Type != null) {
-			_Type.apply(this, arguments);
+		if (_Type$Type != null) {
+			_Type$Type.apply(this, arguments);
 		}
 	}
 
-	_inherits(LongType, _Type);
+	_inherits(LongType, _Type$Type);
 
 	_createClass(LongType, {
 		_serialize: {
@@ -49,6 +49,6 @@ var LongType = (function (_Type) {
 	});
 
 	return LongType;
-})(Type);
+})(Type.Type);
 
 module.exports = LongType;

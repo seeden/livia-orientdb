@@ -5,7 +5,7 @@ import { Type } from 'livia';
 	http://www.w3schools.com/js/js_numbers.asp
 */
 
-export default class DoubleType extends Type {
+export default class DoubleType extends Type.Type {
 	_serialize(value) {
 		return Number(value);
 	}
