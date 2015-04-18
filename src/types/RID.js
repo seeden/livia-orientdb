@@ -21,7 +21,7 @@ export default class RIDType extends Type.Type {
 	}
 
 	toJSON(options) {
-		return this.value ? this.value.toString() : null;
+		return this.value ? this.value.toString() : this.value;
 	}
 
 	static toString() {

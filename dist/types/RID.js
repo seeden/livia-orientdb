@@ -52,7 +52,7 @@ var RIDType = (function (_Type$Type) {
 		},
 		toJSON: {
 			value: function toJSON(options) {
-				return this.value ? this.value.toString() : null;
+				return this.value ? this.value.toString() : this.value;
 			}
 		}
 	}, {

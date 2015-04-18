@@ -1,11 +1,58 @@
 import { Query, Schema, Document } from 'livia';
 import OrientoQuery from 'oriento/lib/db/query';
 import debug from 'debug';
+import _ from 'lodash';
 
 const log = debug('livia-orientdb:query');
 const Operation = Query.Operation;
 
+function stripslashes(str) {
+  return (str + '')
+    .replace(/\\(.?)/g, function(s, n1) {
+      switch (n1) {
+        case '\\':
+          return '\\';
+        case '0':
+          return '\u0000';
+        case '':
+          return '';
+        default:
+          return n1;
+      }
+    });
+}
+
 export default class OrientDBQuery extends Query {
+	fixRecord(record) {
+		var options = this.model.connection.adapter.options;
+		if(options.fixEmbeddedEscape) {
+			record = this.fixEmbeddedEscape(record);
+		}
+
+		return record;
+	}
+
+	fixEmbeddedEscape(record, isChild) {
+		if(!_.isObject(record)) {
+			return record;
+		}
+
+		Object.keys(record).forEach(key => {
+			var value = record[key];
+
+			if(_.isObject(value)) {
+				record[key] = this.fixEmbeddedEscape(value, true);
+				return;
+			}
+
+			if(typeof value === 'string' && isChild) {
+				record[key] = stripslashes(value);
+			}
+		});
+
+		return record;
+	}
+
 	exec(callback) {
 		callback = callback || function() {};
 
@@ -85,7 +132,9 @@ export default class OrientDBQuery extends Query {
 		query.addParams(this._params);
 
 		if(!this._scalar && (operation === Operation.SELECT || operation === Operation.INSERT)) {
-			query = query.transform(function(record) {
+			query = query.transform(record => {
+				record = this.fixRecord(record);
+
 				return model.createDocument(record);
 			});
 		}

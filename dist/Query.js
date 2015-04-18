@@ -18,8 +18,25 @@ var OrientoQuery = _interopRequire(require("oriento/lib/db/query"));
 
 var debug = _interopRequire(require("debug"));
 
+var _ = _interopRequire(require("lodash"));
+
 var log = debug("livia-orientdb:query");
 var Operation = Query.Operation;
+
+function stripslashes(str) {
+	return (str + "").replace(/\\(.?)/g, function (s, n1) {
+		switch (n1) {
+			case "\\":
+				return "\\";
+			case "0":
+				return "\u0000";
+			case "":
+				return "";
+			default:
+				return n1;
+		}
+	});
+}
 
 var OrientDBQuery = (function (_Query) {
 	function OrientDBQuery() {
@@ -33,6 +50,40 @@ var OrientDBQuery = (function (_Query) {
 	_inherits(OrientDBQuery, _Query);
 
 	_createClass(OrientDBQuery, {
+		fixRecord: {
+			value: function fixRecord(record) {
+				var options = this.model.connection.adapter.options;
+				if (options.fixEmbeddedEscape) {
+					record = this.fixEmbeddedEscape(record);
+				}
+
+				return record;
+			}
+		},
+		fixEmbeddedEscape: {
+			value: function fixEmbeddedEscape(record, isChild) {
+				var _this = this;
+
+				if (!_.isObject(record)) {
+					return record;
+				}
+
+				Object.keys(record).forEach(function (key) {
+					var value = record[key];
+
+					if (_.isObject(value)) {
+						record[key] = _this.fixEmbeddedEscape(value, true);
+						return;
+					}
+
+					if (typeof value === "string" && isChild) {
+						record[key] = stripslashes(value);
+					}
+				});
+
+				return record;
+			}
+		},
 		exec: {
 			value: function exec(callback) {
 				var _this = this;
@@ -116,6 +167,8 @@ var OrientDBQuery = (function (_Query) {
 
 				if (!this._scalar && (operation === Operation.SELECT || operation === Operation.INSERT)) {
 					query = query.transform(function (record) {
+						record = _this.fixRecord(record);
+
 						return model.createDocument(record);
 					});
 				}
