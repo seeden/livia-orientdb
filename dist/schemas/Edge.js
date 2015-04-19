@@ -1,26 +1,30 @@
-"use strict";
+'use strict';
 
-var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
 
-var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
 
-var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
-var _Schema = require("./Schema");
+Object.defineProperty(exports, '__esModule', {
+	value: true
+});
 
-var OrientSchema = _interopRequire(_Schema);
+var _OrientSchema$prepareSchema = require('./Schema');
 
-var prepareSchema = _Schema.prepareSchema;
+var _OrientSchema$prepareSchema2 = _interopRequireWildcard(_OrientSchema$prepareSchema);
 
-var Schema = require("livia").Schema;
+var _Schema = require('livia');
 
-var RIDType = _interopRequire(require("../types/RID"));
+var _RIDType = require('../types/RID');
 
-var BASE_EDGE_CLASS = "E";
+var _RIDType2 = _interopRequireWildcard(_RIDType);
+
+var BASE_EDGE_CLASS = 'E';
 
 var Edge = (function (_Schema$Edge) {
 	function Edge(props, options) {
@@ -29,19 +33,19 @@ var Edge = (function (_Schema$Edge) {
 		options = options || {};
 		options.extend = options.extend || BASE_EDGE_CLASS;
 
-		_get(Object.getPrototypeOf(Edge.prototype), "constructor", this).call(this, props, options);
+		_get(Object.getPrototypeOf(Edge.prototype), 'constructor', this).call(this, props, options);
 
-		prepareSchema(this);
+		_OrientSchema$prepareSchema.prepareSchema(this);
 
 		//add default properties
 		this.add({
-			"in": { type: RIDType, required: true, notNull: true }, //from
-			out: { type: RIDType, required: true, notNull: true } //to
+			'in': { type: _RIDType2['default'], required: true, notNull: true }, //from
+			out: { type: _RIDType2['default'], required: true, notNull: true } //to
 		});
 
 		if (options.unique) {
 			this.index({
-				"in": 1,
+				'in': 1,
 				out: 1
 			}, { unique: true });
 		}
@@ -49,15 +53,15 @@ var Edge = (function (_Schema$Edge) {
 
 	_inherits(Edge, _Schema$Edge);
 
-	_createClass(Edge, {
-		getSubdocumentSchemaConstructor: {
-			value: function getSubdocumentSchemaConstructor() {
-				return OrientSchema;
-			}
+	_createClass(Edge, [{
+		key: 'getSubdocumentSchemaConstructor',
+		value: function getSubdocumentSchemaConstructor() {
+			return _OrientSchema$prepareSchema2['default'];
 		}
-	});
+	}]);
 
 	return Edge;
-})(Schema.Edge);
+})(_Schema.Schema.Edge);
 
-module.exports = Edge;
+exports['default'] = Edge;
+module.exports = exports['default'];

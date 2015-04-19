@@ -1,4 +1,4 @@
-import { Schema } from 'livia';
+import { Schema, Index } from 'livia';
 import Type from '../types';
 
 function getDefaultClassName() {
@@ -11,6 +11,7 @@ export function prepareSchema(schema) {
 		'@class'   : { type: String, readonly: true, metadata: true, query: true, default: getDefaultClassName},
 		'@rid'     : { type: Type.RID, readonly: true, metadata: true },
 		'@version' : { type: Number, readonly: true, metadata: true },
+		'@fieldTypes': { type: String, readonly: true, metadata: true }
 	});
 
 	schema.virtual('rid', { metadata: true }).get(function() {
@@ -34,7 +35,7 @@ export default class OrientSchema extends Schema {
 	}
 
 	convertType(type) {
-		if(type.isDocumentClass) {
+		if(type && type.isDocumentClass) {
 			return Type.Linked;
 		}
 

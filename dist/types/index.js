@@ -1,18 +1,33 @@
-"use strict";
+'use strict';
 
-var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
 
-var Type = require("livia").Type;
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 
-var RID = _interopRequire(require("./RID"));
+var _Type = require('livia');
 
-var Double = _interopRequire(require("./Double"));
+var _RID = require('./RID');
 
-var Long = _interopRequire(require("./Long"));
+var _RID2 = _interopRequireWildcard(_RID);
 
-var Linked = _interopRequire(require("./Linked"));
+var _Double = require('./Double');
 
-Type.RID = RID;
-Type.Linked = Linked;
+var _Double2 = _interopRequireWildcard(_Double);
 
-module.exports = Type;
+var _Long = require('./Long');
+
+var _Long2 = _interopRequireWildcard(_Long);
+
+var _Linked = require('./Linked');
+
+var _Linked2 = _interopRequireWildcard(_Linked);
+
+_Type.Type.RID = _RID2['default'];
+_Type.Type.Linked = _Linked2['default'];
+_Type.Type.Double = _Double2['default'];
+_Type.Type.Long = _Long2['default'];
+
+exports['default'] = _Type.Type;
+module.exports = exports['default'];

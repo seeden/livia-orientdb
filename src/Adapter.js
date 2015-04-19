@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { Adapter, Model } from 'livia';
+import { Adapter, Model, Index } from 'livia';
 import Query from './Query';
 import Oriento from 'oriento';
 import { waterfall, each } from 'async';
@@ -45,7 +45,30 @@ export default class OrientDBAdapter extends Adapter {
 		return new Query(model, options);
 	}
 
+	getIndexType(options) {
+		var type = options.unique ? 'UNIQUE' : 'NOTUNIQUE';
+
+		if(options.type === Index.DICTIONARY) {
+			type = 'DICTIONARY';
+		} else if(options.type === Index.FULLTEXT) {
+			if(options.lucene) {
+				return 'FULLTEXT ENGINE LUCENE';
+			}
+
+			type = 'FULLTEXT';
+		} else if(options.type === Index.SPATIAL) {
+			return 'SPATIAL ENGINE LUCENE';
+		} 
+
+		if(options.hash) {
+			type += '_HASH_INDEX';
+		}
+
+		return type;
+	}
+
 	ensureIndex(model, OClass, callback) {
+		var adapter = this;
 		var db = this.db;
 		var className = model.name;
 		var schema = model.schema;
@@ -123,7 +146,7 @@ export default class OrientDBAdapter extends Adapter {
 						'class'    : className, 
 						name       : indexName,
 						properties : Object.keys(index.properties),
-						type       : index.type
+						type       : adapter.getIndexType(index)
 					};
 
 					configs.push(config);
