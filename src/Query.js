@@ -122,6 +122,16 @@ export default class OrientDBQuery extends Query {
 		}			
 
 		if(this._set) {
+			
+			if(operation === Operation.INSERT) {
+				if(this._set['@type']) {
+					delete this._set['@type'];
+				} 
+				if(this._set['@class']) {
+					delete this._set['@class'];
+				}
+			}
+
 			query.set(this._set);
 		}
 

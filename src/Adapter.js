@@ -51,7 +51,7 @@ export default class OrientDBAdapter extends Adapter {
 		if(options.type === Index.DICTIONARY) {
 			type = 'DICTIONARY';
 		} else if(options.type === Index.FULLTEXT) {
-			if(options.lucene) {
+			if(options.engine === 'lucene') {
 				return 'FULLTEXT ENGINE LUCENE';
 			}
 

@@ -29,7 +29,7 @@ function prepareSchema(schema) {
 	schema.add({
 		'@type': { type: String, readonly: true, metadata: true, query: true, 'default': 'document' },
 		'@class': { type: String, readonly: true, metadata: true, query: true, 'default': getDefaultClassName },
-		'@rid': { type: _Type2['default'].RID, readonly: true, metadata: true },
+		'@rid': { type: _Type2['default'].RID, readonly: true, metadata: true, isRecordID: true },
 		'@version': { type: Number, readonly: true, metadata: true },
 		'@fieldTypes': { type: String, readonly: true, metadata: true }
 	});

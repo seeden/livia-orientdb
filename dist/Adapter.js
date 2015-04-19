@@ -94,7 +94,7 @@ var OrientDBAdapter = (function (_Adapter) {
 			if (options.type === _Adapter$Model$Index.Index.DICTIONARY) {
 				type = 'DICTIONARY';
 			} else if (options.type === _Adapter$Model$Index.Index.FULLTEXT) {
-				if (options.lucene) {
+				if (options.engine === 'lucene') {
 					return 'FULLTEXT ENGINE LUCENE';
 				}
 
