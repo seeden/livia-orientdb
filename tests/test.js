@@ -39,7 +39,11 @@ describe('Connection', function() {
 				city   : { type: String, default: 'Kosice' },
 				street : { type: String }
 			},
-			tags    : [String]
+			tags    : [String],
+			images   : [{
+				title: { type: String, required: true },
+				created: { type: Date }
+			}]
 		});
 
 		schema.pre('save', function(done) {
@@ -94,6 +98,27 @@ describe('Connection', function() {
 			if(err) throw err;
 			done();
 		});
+	});	
+
+	it('should be able to create a simple model and assign to existing schema', function(done) {
+		var schemaVerySimple = new Schema({
+			title: { type: String }
+		});
+
+		connection.model('Article', schemaVerySimple, function(err, ArticleModel) {
+			if(err) {
+				throw err;
+			}
+
+			schema.add({
+				articles: {
+					type: [ArticleModel],
+					required: true
+				}
+			});
+
+			done();
+		});		
 	});	
 
 	it('should be able to create a model', function(done) {

@@ -84,11 +84,16 @@ var Linked = (function (_RID) {
 
 			return _get(Object.getPrototypeOf(Linked.prototype), 'isModified', this);
 		}
-	}, {
-		key: 'linkedClass',
-		get: function () {
-			var type = this.options.type;
-			return type.modelName ? type.modelName : null;
+	}], [{
+		key: 'getPropertyConfig',
+		value: function getPropertyConfig(prop) {
+			if (prop.type.isDocumentClass) {
+				return {
+					linkedClass: prop.type.modelName
+				};
+			}
+
+			return {};
 		}
 	}]);
 

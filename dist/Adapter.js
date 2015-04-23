@@ -18,7 +18,7 @@ var _import = require('lodash');
 
 var _import2 = _interopRequireWildcard(_import);
 
-var _Adapter$Model$Index = require('livia');
+var _Adapter$Model$Index$Type = require('livia');
 
 var _Query = require('./Query');
 
@@ -91,15 +91,15 @@ var OrientDBAdapter = (function (_Adapter) {
 		value: function getIndexType(options) {
 			var type = options.unique ? 'UNIQUE' : 'NOTUNIQUE';
 
-			if (options.type === _Adapter$Model$Index.Index.DICTIONARY) {
+			if (options.type === _Adapter$Model$Index$Type.Index.DICTIONARY) {
 				type = 'DICTIONARY';
-			} else if (options.type === _Adapter$Model$Index.Index.FULLTEXT) {
+			} else if (options.type === _Adapter$Model$Index$Type.Index.FULLTEXT) {
 				if (options.engine === 'lucene') {
 					return 'FULLTEXT ENGINE LUCENE';
 				}
 
 				type = 'FULLTEXT';
-			} else if (options.type === _Adapter$Model$Index.Index.SPATIAL) {
+			} else if (options.type === _Adapter$Model$Index$Type.Index.SPATIAL) {
 				return 'SPATIAL ENGINE LUCENE';
 			}
 
@@ -273,7 +273,7 @@ var OrientDBAdapter = (function (_Adapter) {
 
 					var schemaProp = schema.getPath(propName);
 					var schemaType = schema.getSchemaType(propName);
-					var type = schemaType.getDbType(schemaProp.options);
+					var type = schemaType.getDbType(schemaProp);
 
 					if (schemaProp.options.metadata || schemaProp.options.ensure === false) {
 						return callback(null);
@@ -282,28 +282,22 @@ var OrientDBAdapter = (function (_Adapter) {
 					_waterfall$each.waterfall([
 					//create LinkedClass for embedded documents
 					function (callback) {
-						if (type === 'EMBEDDED' && schemaType.isObject) {
-							var modelName = className + 'A' + _import2['default'].capitalize(propName);
-
-							return new _Adapter$Model$Index.Model(modelName, schemaProp.type, model.connection, {
-								abstract: true
-							}, callback);
-						} else if (type === 'EMBEDDEDLIST' && schemaType.isArray && schemaProp.item) {
-							var item = schemaProp.item;
-							if (item.schemaType.isObject) {
-								var modelName = className + 'A' + _import2['default'].capitalize(propName);
-
-								return new _Adapter$Model$Index.Model(modelName, item.type, model.connection, {
-									abstract: true
-								}, callback);
-							}
+						if (!schemaType.isAbstract(schemaProp)) {
+							return callback(null, null);
 						}
 
-						if (schemaProp.options.type.currentModel) {
-							return callback(null, schemaProp.options.type.currentModel);
+						var abstractClassName = schemaType.computeAbstractClassName(className, propName);
+						var embeddedSchema = schemaType.getEmbeddedSchema(schemaProp);
+
+						log('Founded abstract class: ' + abstractClassName + ' with schema: ' + !!embeddedSchema);
+
+						if (!abstractClassName || !embeddedSchema) {
+							return callback(null, null);
 						}
 
-						callback(null, null);
+						return new _Adapter$Model$Index$Type.Model(abstractClassName, embeddedSchema, model.connection, {
+							abstract: true
+						}, callback);
 					}, function (model, callback) {
 						var options = schemaProp.options;
 
@@ -354,7 +348,7 @@ var OrientDBAdapter = (function (_Adapter) {
 	}]);
 
 	return OrientDBAdapter;
-})(_Adapter$Model$Index.Adapter);
+})(_Adapter$Model$Index$Type.Adapter);
 
 exports['default'] = OrientDBAdapter;
 ;

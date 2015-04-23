@@ -48,10 +48,16 @@ export default class Linked extends RID {
 		}
 
 		return super.isModified;
-	}		
+	}
 
-	get linkedClass() {
-		var type = this.options.type;
-		return type.modelName ? type.modelName : null;
+	static getPropertyConfig(prop) {
+		if(prop.type.isDocumentClass) {
+			return {
+				linkedClass: prop.type.modelName
+			};
+		}
+
+		return {
+		};
 	}
 };

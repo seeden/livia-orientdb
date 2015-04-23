@@ -1,6 +1,6 @@
 {
 	"name": "livia-orientdb",
-	"version": "0.1.18",
+	"version": "0.2.1",
 	"description": "OrientDB adapter for universal database driver Livia",
 	"author": {
 		"name": "Zlatko Fedor",
@@ -57,9 +57,9 @@
 		"should": "~5.0.1",
 		"babel": "~5.1.10",
 		"mongoose": "~4.0.1",
-		"livia": "~0.2.9"
+		"livia": "~0.3.4"
 	},
 	"peerDependencies": {
-		"livia": ">= 0.2.0 < 1"
+		"livia": ">= 0.3.4 < 1"
 	}
 }

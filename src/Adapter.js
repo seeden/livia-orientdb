@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { Adapter, Model, Index } from 'livia';
+import { Adapter, Model, Index, Type } from 'livia';
 import Query from './Query';
 import Oriento from 'oriento';
 import { waterfall, each } from 'async';
@@ -226,7 +226,7 @@ export default class OrientDBAdapter extends Adapter {
 
 					var schemaProp = schema.getPath(propName);
 					var schemaType = schema.getSchemaType(propName);
-					var type = schemaType.getDbType(schemaProp.options);
+					var type = schemaType.getDbType(schemaProp);
 
 					if(schemaProp.options.metadata || schemaProp.options.ensure === false) {
 						return callback(null);
@@ -235,28 +235,22 @@ export default class OrientDBAdapter extends Adapter {
 					waterfall([
 						//create LinkedClass for embedded documents
 						function(callback) { 
-							if(type === 'EMBEDDED' && schemaType.isObject) {
-								var modelName = className + 'A' + _.capitalize(propName);
-
-								return new Model(modelName, schemaProp.type, model.connection, {
-									abstract: true
-								}, callback);
-							} else if(type === 'EMBEDDEDLIST' && schemaType.isArray && schemaProp.item) {
-								var item = schemaProp.item;
-								if(item.schemaType.isObject) {
-									var modelName = className + 'A' + _.capitalize(propName);
-
-									return new Model(modelName, item.type, model.connection, {
-										abstract: true
-									}, callback);
-								}
+							if(!schemaType.isAbstract(schemaProp)) {
+								return callback(null, null);
 							}
 
-							if(schemaProp.options.type.currentModel) {
-								return callback(null, schemaProp.options.type.currentModel);
+							const abstractClassName = schemaType.computeAbstractClassName(className, propName);
+							const embeddedSchema = schemaType.getEmbeddedSchema(schemaProp);
+
+							log(`Founded abstract class: ${abstractClassName} with schema: ` + !!embeddedSchema);
+
+							if(!abstractClassName || !embeddedSchema) {
+								return callback(null, null);
 							}
 
-							callback(null, null);
+							return new Model(abstractClassName, embeddedSchema, model.connection, {
+								abstract: true
+							}, callback);
 						}, function(model, callback) {
 							var options = schemaProp.options;
 
