@@ -53,6 +53,10 @@ export default class OrientDBQuery extends Query {
 		return record;
 	}
 
+	native() {
+		return new OrientoQuery(this.model.connection.adapter.db);
+	}
+
 	exec(callback) {
 		callback = callback || function() {};
 
@@ -63,7 +67,7 @@ export default class OrientDBQuery extends Query {
 			throw new Error('Operation is not defined');
 		}
 
-		var query = new OrientoQuery(model.connection.adapter.db);
+		var query = this.native();
 		var q = query;
 
 		var target = this._target;
@@ -122,7 +126,6 @@ export default class OrientDBQuery extends Query {
 		}			
 
 		if(this._set) {
-			
 			if(operation === Operation.INSERT) {
 				if(this._set['@type']) {
 					delete this._set['@type'];

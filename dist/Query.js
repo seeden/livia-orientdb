@@ -90,6 +90,11 @@ var OrientDBQuery = (function (_Query) {
 			return record;
 		}
 	}, {
+		key: 'native',
+		value: function native() {
+			return new _OrientoQuery2['default'](this.model.connection.adapter.db);
+		}
+	}, {
 		key: 'exec',
 		value: function exec(callback) {
 			var _this2 = this;
@@ -103,7 +108,7 @@ var OrientDBQuery = (function (_Query) {
 				throw new Error('Operation is not defined');
 			}
 
-			var query = new _OrientoQuery2['default'](model.connection.adapter.db);
+			var query = this.native();
 			var q = query;
 
 			var target = this._target;
@@ -162,7 +167,6 @@ var OrientDBQuery = (function (_Query) {
 			}
 
 			if (this._set) {
-
 				if (operation === Operation.INSERT) {
 					if (this._set['@type']) {
 						delete this._set['@type'];
