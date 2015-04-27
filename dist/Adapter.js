@@ -185,6 +185,19 @@ var OrientDBAdapter = (function (_Adapter) {
 						return callback(null);
 					}
 
+					var canCreate = true;
+					Object.keys(index.properties).forEach(function (name) {
+						if (name.indexOf('.') !== -1) {
+							canCreate = false;
+						}
+
+						log('Index for subschemas is not supported yet: ' + name);
+					});
+
+					if (!canCreate) {
+						return callback(null);
+					}
+
 					log('Creating index: ' + indexName);
 
 					var config = {
