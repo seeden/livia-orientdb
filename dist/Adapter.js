@@ -64,7 +64,7 @@ var OrientDBAdapter = (function (_Adapter) {
 			return this._dbOptions;
 		}
 	}, {
-		key: 'db',
+		key: 'native',
 		get: function () {
 			return this._db;
 		}
@@ -113,7 +113,7 @@ var OrientDBAdapter = (function (_Adapter) {
 		key: 'ensureIndex',
 		value: function ensureIndex(model, OClass, callback) {
 			var adapter = this;
-			var db = this.db;
+			var db = this.native;
 			var className = model.name;
 			var schema = model.schema;
 
@@ -226,7 +226,7 @@ var OrientDBAdapter = (function (_Adapter) {
 		value: function ensureClass(model, callback) {
 			var _this = this;
 
-			var db = this.db;
+			var db = this.native;
 			var schema = model.schema;
 			var className = model.name;
 

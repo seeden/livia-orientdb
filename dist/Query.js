@@ -6,6 +6,8 @@ var _classCallCheck = function (instance, Constructor) { if (!(instance instance
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
 Object.defineProperty(exports, '__esModule', {
@@ -56,6 +58,61 @@ var OrientDBQuery = (function (_Query) {
 	_inherits(OrientDBQuery, _Query);
 
 	_createClass(OrientDBQuery, [{
+		key: 'queryLanguage',
+
+		//fix contains for collections
+		value: function queryLanguage(conditions, parentPath) {
+			var model = this.model;
+
+			if (typeof!model === 'undefined') {
+				return _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'queryLanguage', this).call(this, conditions, parentPath);
+			}
+
+			var schema = model.schema;
+
+			Object.keys(conditions).forEach(function (propertyName) {
+				var pos = propertyName.indexOf('.');
+				if (pos === -1) {
+					return;
+				}
+
+				var value = conditions[propertyName];
+				var parent = propertyName.substr(0, pos);
+				var child = propertyName.substr(pos + 1);
+
+				var currentPath = parentPath ? parentPath + '.' + parent : parent;
+
+				var prop = schema.getPath(currentPath);
+				if (!prop || !prop.schemaType || !prop.schemaType.isArray) {
+					return;
+				}
+
+				//replace condition
+				delete conditions[propertyName];
+
+				var subConditions = conditions[parent] || {};
+				if (!_import2['default'].isPlainObject(subConditions)) {
+					subConditions = {
+						$eq: subConditions
+					};
+				}
+
+				if (!subConditions.$contains) {
+					subConditions.$contains = {};
+				}
+
+				if (subConditions.$contains[child]) {
+					throw new Error('Condition already exists for ' + child);
+				}
+
+				subConditions.$contains[child] = value;
+
+				conditions[parent] = subConditions;
+			});
+
+			return _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'queryLanguage', this).call(this, conditions, parentPath);
+		}
+	}, {
 		key: 'fixRecord',
 		value: function fixRecord(record) {
 			var options = this.model.connection.adapter.options;
@@ -92,7 +149,7 @@ var OrientDBQuery = (function (_Query) {
 	}, {
 		key: 'native',
 		value: function native() {
-			return new _OrientoQuery2['default'](this.model.connection.adapter.db);
+			return new _OrientoQuery2['default'](this.model.native);
 		}
 	}, {
 		key: 'exec',

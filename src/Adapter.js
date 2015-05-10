@@ -26,7 +26,7 @@ export default class OrientDBAdapter extends Adapter {
 		return this._dbOptions;
 	}
 
-	get db() {
+	get native() {
 		return this._db;
 	}
 
@@ -69,7 +69,7 @@ export default class OrientDBAdapter extends Adapter {
 
 	ensureIndex(model, OClass, callback) {
 		var adapter = this;
-		var db = this.db;
+		var db = this.native;
 		var className = model.name;
 		var schema = model.schema;
 
@@ -179,7 +179,7 @@ export default class OrientDBAdapter extends Adapter {
 	}
 
 	ensureClass(model, callback) {
-		var db = this.db;
+		var db = this.native;
 		var schema = model.schema;
 		var className = model.name;
 

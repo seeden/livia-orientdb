@@ -23,6 +23,61 @@ function stripslashes(str) {
 }
 
 export default class OrientDBQuery extends Query {
+	//fix contains for collections
+	queryLanguage(conditions, parentPath) {
+		const model = this.model;
+
+		if(typeof !model === 'undefined') {
+			return super.queryLanguage(conditions, parentPath);
+		}
+
+		const schema = model.schema;
+
+		Object.keys(conditions).forEach(propertyName => {
+			const pos = propertyName.indexOf('.');
+			if(pos === -1) {
+				return;
+			}
+
+			const value = conditions[propertyName];
+			const parent = propertyName.substr(0, pos);
+			const child = propertyName.substr(pos + 1);
+
+			const currentPath = parentPath 
+				? parentPath + '.' + parent
+				: parent;
+
+			const prop = schema.getPath(currentPath);
+			if(!prop || !prop.schemaType || !prop.schemaType.isArray) {
+				return;
+			}
+
+			//replace condition
+			delete conditions[propertyName];
+
+			var subConditions = conditions[parent] || {};
+			if(!_.isPlainObject(subConditions)) {
+				subConditions = {
+					$eq: subConditions
+				};
+			}
+
+			if(!subConditions.$contains) {
+				subConditions.$contains = {};
+			}
+
+			if(subConditions.$contains[child]) {
+				throw new Error(`Condition already exists for ${child}`);
+			}
+
+			subConditions.$contains[child] = value;
+
+			conditions[parent] = subConditions;
+		});
+
+		return super.queryLanguage(conditions, parentPath);
+	}
+
 	fixRecord(record) {
 		var options = this.model.connection.adapter.options;
 		if(options.fixEmbeddedEscape) {
@@ -54,7 +109,7 @@ export default class OrientDBQuery extends Query {
 	}
 
 	native() {
-		return new OrientoQuery(this.model.connection.adapter.db);
+		return new OrientoQuery(this.model.native);
 	}
 
 	exec(callback) {
