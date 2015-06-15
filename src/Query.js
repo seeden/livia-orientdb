@@ -23,6 +23,14 @@ function stripslashes(str) {
 }
 
 export default class OrientDBQuery extends Query {
+	scalar(useScalar, castFn) {
+		if(typeof castFn === 'undefined') {
+			castFn = Number;
+		}
+
+		return super.scalar(useScalar, castFn);
+	}
+
 	//fix contains for collections
 	queryLanguage(conditions, parentPath) {
 		const model = this.model;
@@ -133,6 +141,8 @@ export default class OrientDBQuery extends Query {
 			}
 		}
 
+		const select = this._select || '*';
+
 		var isGraph = schema instanceof Schema.Graph;
 		if(isGraph) {
 			var graphType = schema instanceof Schema.Edge ? 'EDGE' : 'VERTEX';
@@ -142,7 +152,7 @@ export default class OrientDBQuery extends Query {
 			} else if(operation === Operation.DELETE) {
 				query = query.delete(graphType, target);
 			} else if(operation === Operation.SELECT) {
-				query = query.select().from(target);
+				query = query.select(select).from(target);
 			} else {
 				query = query.update(target);
 			}
@@ -152,7 +162,7 @@ export default class OrientDBQuery extends Query {
 			} else if(operation === Operation.DELETE) {
 				query = query.delete().from(target);
 			} else if(operation === Operation.SELECT) {
-				query = query.select().from(target);
+				query = query.select(select).from(target);
 			} else {
 				query = query.update(target);
 			}			
@@ -243,12 +253,22 @@ export default class OrientDBQuery extends Query {
 				return callback(null, results);
 			}
 
-			if(this._first) {
+			if(this._first || this._scalar) {
 				results = results[0];
 			}
 
-			if(this._scalar && results.length) {
-				results = parseInt(results[0]);
+			if(this._scalar && results) {
+				const keys = Object.keys(results).filter(function(item) {
+					return item[0] !== '@';
+    			});
+
+    			if(keys.length) {
+    				results = results[keys[0]];
+
+    				if(this._scalarCast && results !== null && typeof results !== 'undefined') {
+    					results = this._scalarCast(results);
+    				}
+    			}
 			}
 
 			callback(null, results);

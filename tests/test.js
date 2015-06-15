@@ -234,6 +234,34 @@ describe('Connection', function() {
 
 			done();
 		});
+	});	
+
+	it('should be able to use avg function', function(done) {
+		var User = connection.model('User');
+
+		User.avg('points').exec(function(err, total) {
+			if(err) {
+				throw err;
+			}
+
+			total.should.equal(30);
+
+			done();
+		});
+	});	
+
+	it('should be able to use count function', function(done) {
+		var User = connection.model('User');
+
+		User.count().exec(function(err, total) {
+			if(err) {
+				throw err;
+			}
+
+			total.should.equal(1);
+
+			done();
+		});
 	});		
 
 	it('should be able to remove a document', function(done) {
@@ -246,7 +274,7 @@ describe('Connection', function() {
 
 			done();
 		});
-	});	
+	});
 
 	it('should be able to get User model', function(done) {
 		var UserModel = connection.model('User');
@@ -379,6 +407,22 @@ describe('E', function() {
 			done();
 		});
 	});	
+
+	it('should be able to update vertex p1', function(done) {
+		var Person = connection.model('Person');
+
+		Person.update(p1, {
+			name: 'Adam'
+		}, function(err, total) {
+			if(err) {
+				throw err;
+			}
+
+			total.should.equal(1);
+
+			done();
+		});
+	});			
 
 	it('should be able to remove vertex p1', function(done) {
 		p1.remove(function(err, total) {

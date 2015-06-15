@@ -58,6 +58,15 @@ var OrientDBQuery = (function (_Query) {
 	_inherits(OrientDBQuery, _Query);
 
 	_createClass(OrientDBQuery, [{
+		key: 'scalar',
+		value: function scalar(useScalar, castFn) {
+			if (typeof castFn === 'undefined') {
+				castFn = Number;
+			}
+
+			return _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'scalar', this).call(this, useScalar, castFn);
+		}
+	}, {
 		key: 'queryLanguage',
 
 		//fix contains for collections
@@ -176,6 +185,8 @@ var OrientDBQuery = (function (_Query) {
 				}
 			}
 
+			var select = this._select || '*';
+
 			var isGraph = schema instanceof _Query$Schema$Document.Schema.Graph;
 			if (isGraph) {
 				var graphType = schema instanceof _Query$Schema$Document.Schema.Edge ? 'EDGE' : 'VERTEX';
@@ -185,7 +196,7 @@ var OrientDBQuery = (function (_Query) {
 				} else if (operation === Operation.DELETE) {
 					query = query['delete'](graphType, target);
 				} else if (operation === Operation.SELECT) {
-					query = query.select().from(target);
+					query = query.select(select).from(target);
 				} else {
 					query = query.update(target);
 				}
@@ -195,7 +206,7 @@ var OrientDBQuery = (function (_Query) {
 				} else if (operation === Operation.DELETE) {
 					query = query['delete']().from(target);
 				} else if (operation === Operation.SELECT) {
-					query = query.select().from(target);
+					query = query.select(select).from(target);
 				} else {
 					query = query.update(target);
 				}
@@ -284,12 +295,22 @@ var OrientDBQuery = (function (_Query) {
 					return callback(null, results);
 				}
 
-				if (_this2._first) {
+				if (_this2._first || _this2._scalar) {
 					results = results[0];
 				}
 
-				if (_this2._scalar && results.length) {
-					results = parseInt(results[0]);
+				if (_this2._scalar && results) {
+					var keys = Object.keys(results).filter(function (item) {
+						return item[0] !== '@';
+					});
+
+					if (keys.length) {
+						results = results[keys[0]];
+
+						if (_this2._scalarCast && results !== null && typeof results !== 'undefined') {
+							results = _this2._scalarCast(results);
+						}
+					}
 				}
 
 				callback(null, results);

@@ -25,6 +25,29 @@ function getDefaultClassName() {
 	return this._className;
 }
 
+function aggregatedFunction(fnName, field, conditions, callback) {
+	if (typeof conditions === 'function') {
+		callback = conditions;
+		conditions = {};
+	}
+
+	if (typeof field === 'function') {
+		callback = field;
+		conditions = {};
+		field = '*';
+	}
+
+	if (typeof field === 'undefined') {
+		field = '*';
+	}
+
+	var query = this.find(conditions).select('' + fnName + '(' + field + ')').scalar(true);
+
+	return callback ? query.exec(callback) : query;
+}
+
+var mathFunctions = ['count', 'avg', 'sum', 'min', 'max', 'median', 'percentile', 'variance', 'stddev'];
+
 function prepareSchema(schema) {
 	schema.add({
 		'@type': { type: String, readonly: true, metadata: true, query: true, 'default': 'document' },
@@ -40,6 +63,14 @@ function prepareSchema(schema) {
 
 	schema.virtual('_id', { metadata: true }).get(function () {
 		return this.get('@rid');
+	});
+
+	schema.statics.aggregatedFunction = aggregatedFunction;
+
+	mathFunctions.forEach(function (fnName) {
+		schema.statics[fnName] = function (field, conditions, callback) {
+			return this.aggregatedFunction(fnName, field, conditions, callback);
+		};
 	});
 }
 
