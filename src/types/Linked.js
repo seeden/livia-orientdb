@@ -17,7 +17,7 @@ export default class Linked extends RID {
 	}
 
 	toJSON(options) {
-		var value = this.value;
+		const value = this.value;
 		if(value instanceof Document) {
 			return value.toJSON(options);
 		}
@@ -26,7 +26,7 @@ export default class Linked extends RID {
 	}
 
 	toObject(options) {
-		var value = this.value;
+		const value = this.value;
 		if(value instanceof Document) {
 			return value.toObject(options);
 		}
