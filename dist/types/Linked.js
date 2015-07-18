@@ -11,7 +11,7 @@ var _get = function get(object, property, receiver) { var desc = Object.getOwnPr
 var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
 Object.defineProperty(exports, '__esModule', {
-	value: true
+  value: true
 });
 
 var _RID2 = require('./RID');
@@ -25,81 +25,88 @@ var _import2 = _interopRequireWildcard(_import);
 var _Document = require('livia');
 
 var Linked = (function (_RID) {
-	function Linked() {
-		_classCallCheck(this, Linked);
+  function Linked() {
+    _classCallCheck(this, Linked);
 
-		if (_RID != null) {
-			_RID.apply(this, arguments);
-		}
-	}
+    if (_RID != null) {
+      _RID.apply(this, arguments);
+    }
+  }
 
-	_inherits(Linked, _RID);
+  _inherits(Linked, _RID);
 
-	_createClass(Linked, [{
-		key: '_serialize',
-		value: function _serialize(value) {
-			if (_import2['default'].isPlainObject(value)) {
-				var doc = this._value = this._value instanceof _Document.Document ? this._value : new this.options.type({});
+  _createClass(Linked, [{
+    key: '_serialize',
+    value: function _serialize(value) {
+      if (_import2['default'].isPlainObject(value)) {
+        var doc = this._value = this._value instanceof _Document.Document ? this._value : new this.options.type({});
 
-				doc.set(value);
-				return doc;
-			}
+        doc.set(value);
+        return doc;
+      }
 
-			return _get(Object.getPrototypeOf(Linked.prototype), '_serialize', this).call(this, value);
-		}
-	}, {
-		key: 'toJSON',
-		value: function toJSON(options) {
-			var value = this.value;
-			if (value instanceof _Document.Document) {
-				return value.toJSON(options);
-			}
+      return _get(Object.getPrototypeOf(Linked.prototype), '_serialize', this).call(this, value);
+    }
+  }, {
+    key: 'toJSON',
+    value: function toJSON(options) {
+      var value = this.value;
+      if (value instanceof _Document.Document) {
+        return value.toJSON(options);
+      }
 
-			return _get(Object.getPrototypeOf(Linked.prototype), 'toJSON', this).call(this, options);
-		}
-	}, {
-		key: 'toObject',
-		value: function toObject(options) {
-			var value = this.value;
-			if (value instanceof _Document.Document) {
-				return value.toObject(options);
-			}
+      return _get(Object.getPrototypeOf(Linked.prototype), 'toJSON', this).call(this, options);
+    }
+  }, {
+    key: 'toObject',
+    value: function toObject(options) {
+      var value = this.value;
+      if (value instanceof _Document.Document) {
+        return value.toObject(options);
+      }
 
-			return _get(Object.getPrototypeOf(Linked.prototype), 'toObject', this).call(this, options);
-		}
-	}, {
-		key: 'isModified',
-		get: function () {
-			if (this._value instanceof _Document.Document) {
-				var isModified = false;
+      return _get(Object.getPrototypeOf(Linked.prototype), 'toObject', this).call(this, options);
+    }
+  }, {
+    key: 'isModified',
+    get: function () {
+      var _this = this;
 
-				this._value.forEach(true, function (prop) {
-					if (prop.isModified) {
-						isModified = true;
-					}
-				});
+      if (this._value instanceof _Document.Document) {
+        var _ret = (function () {
+          var isModified = false;
 
-				return isModified;
-			}
+          _this._value.forEach(true, function (prop) {
+            if (prop.isModified) {
+              isModified = true;
+            }
+          });
 
-			return _get(Object.getPrototypeOf(Linked.prototype), 'isModified', this);
-		}
-	}], [{
-		key: 'getPropertyConfig',
-		value: function getPropertyConfig(prop) {
-			if (prop.type.isDocumentClass) {
-				return {
-					linkedClass: prop.type.modelName
-				};
-			}
+          return {
+            v: isModified
+          };
+        })();
 
-			return {};
-		}
-	}]);
+        if (typeof _ret === 'object') return _ret.v;
+      }
 
-	return Linked;
+      return _get(Object.getPrototypeOf(Linked.prototype), 'isModified', this);
+    }
+  }], [{
+    key: 'getPropertyConfig',
+    value: function getPropertyConfig(prop) {
+      if (prop.type.isDocumentClass) {
+        return {
+          linkedClass: prop.type.modelName
+        };
+      }
+
+      return {};
+    }
+  }]);
+
+  return Linked;
 })(_RID3['default']);
 
 exports['default'] = Linked;
-;
 module.exports = exports['default'];

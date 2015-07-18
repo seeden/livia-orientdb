@@ -11,100 +11,97 @@ var _get = function get(object, property, receiver) { var desc = Object.getOwnPr
 var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
 Object.defineProperty(exports, '__esModule', {
-	value: true
+  value: true
 });
 exports.prepareSchema = prepareSchema;
 
-var _Schema$Index = require('livia');
+var _Schema2 = require('livia');
 
 var _Type = require('../types');
 
 var _Type2 = _interopRequireWildcard(_Type);
 
 function getDefaultClassName() {
-	return this._className;
+  return this._className;
 }
 
 function aggregatedFunction(fnName, field, conditions, callback) {
-	if (typeof conditions === 'function') {
-		callback = conditions;
-		conditions = {};
-	}
+  if (typeof conditions === 'function') {
+    callback = conditions;
+    conditions = {};
+  }
 
-	if (typeof field === 'function') {
-		callback = field;
-		conditions = {};
-		field = '*';
-	}
+  if (typeof field === 'function') {
+    callback = field;
+    conditions = {};
+    field = '*';
+  }
 
-	if (typeof field === 'undefined') {
-		field = '*';
-	}
+  if (typeof field === 'undefined') {
+    field = '*';
+  }
 
-	var query = this.find(conditions).select('' + fnName + '(' + field + ')').scalar(true);
+  var query = this.find(conditions).select('' + fnName + '(' + field + ')').scalar(true);
 
-	return callback ? query.exec(callback) : query;
+  return callback ? query.exec(callback) : query;
 }
 
 var mathFunctions = ['count', 'avg', 'sum', 'min', 'max', 'median', 'percentile', 'variance', 'stddev'];
 
 function prepareSchema(schema) {
-	schema.add({
-		'@type': { type: String, readonly: true, metadata: true, query: true, 'default': 'document' },
-		'@class': { type: String, readonly: true, metadata: true, query: true, 'default': getDefaultClassName },
-		'@rid': { type: _Type2['default'].RID, readonly: true, metadata: true, isRecordID: true },
-		'@version': { type: Number, readonly: true, metadata: true },
-		'@fieldTypes': { type: String, readonly: true, metadata: true }
-	});
+  schema.add({
+    '@type': { type: String, readonly: true, metadata: true, query: true, 'default': 'document' },
+    '@class': { type: String, readonly: true, metadata: true, query: true, 'default': getDefaultClassName },
+    '@rid': { type: _Type2['default'].RID, readonly: true, metadata: true, isRecordID: true },
+    '@version': { type: Number, readonly: true, metadata: true },
+    '@fieldTypes': { type: String, readonly: true, metadata: true }
+  });
 
-	schema.virtual('rid', { metadata: true }).get(function () {
-		return this.get('@rid');
-	});
+  schema.virtual('rid', { metadata: true }).get(function () {
+    return this.get('@rid');
+  });
 
-	schema.virtual('_id', { metadata: true }).get(function () {
-		return this.get('@rid');
-	});
+  schema.virtual('_id', { metadata: true }).get(function () {
+    return this.get('@rid');
+  });
 
-	schema.statics.aggregatedFunction = aggregatedFunction;
+  schema.statics.aggregatedFunction = aggregatedFunction;
 
-	mathFunctions.forEach(function (fnName) {
-		schema.statics[fnName] = function (field, conditions, callback) {
-			return this.aggregatedFunction(fnName, field, conditions, callback);
-		};
-	});
+  mathFunctions.forEach(function (fnName) {
+    schema.statics[fnName] = function (field, conditions, callback) {
+      return this.aggregatedFunction(fnName, field, conditions, callback);
+    };
+  });
 }
 
-;
-
 var OrientSchema = (function (_Schema) {
-	function OrientSchema(props, options) {
-		_classCallCheck(this, OrientSchema);
+  function OrientSchema(props, options) {
+    _classCallCheck(this, OrientSchema);
 
-		_get(Object.getPrototypeOf(OrientSchema.prototype), 'constructor', this).call(this, props, options);
+    _get(Object.getPrototypeOf(OrientSchema.prototype), 'constructor', this).call(this, props, options);
 
-		prepareSchema(this);
-	}
+    prepareSchema(this);
+  }
 
-	_inherits(OrientSchema, _Schema);
+  _inherits(OrientSchema, _Schema);
 
-	_createClass(OrientSchema, [{
-		key: 'getSubdocumentSchemaConstructor',
-		value: function getSubdocumentSchemaConstructor() {
-			return OrientSchema;
-		}
-	}, {
-		key: 'convertType',
-		value: function convertType(type) {
-			if (type && type.isDocumentClass) {
-				return _Type2['default'].Linked;
-			}
+  _createClass(OrientSchema, [{
+    key: 'getSubdocumentSchemaConstructor',
+    value: function getSubdocumentSchemaConstructor() {
+      return OrientSchema;
+    }
+  }, {
+    key: 'convertType',
+    value: function convertType(type) {
+      if (type && type.isDocumentClass) {
+        return _Type2['default'].Linked;
+      }
 
-			return _get(Object.getPrototypeOf(OrientSchema.prototype), 'convertType', this).call(this, type);
-		}
-	}]);
+      return _get(Object.getPrototypeOf(OrientSchema.prototype), 'convertType', this).call(this, type);
+    }
+  }]);
 
-	return OrientSchema;
-})(_Schema$Index.Schema);
+  return OrientSchema;
+})(_Schema2.Schema);
 
 exports['default'] = OrientSchema;
-;

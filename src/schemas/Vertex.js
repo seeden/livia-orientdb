@@ -2,16 +2,15 @@ import OrientSchema, { prepareSchema } from './Schema';
 import { Schema } from 'livia';
 
 export default class Vertex extends Schema.Vertex {
-	constructor(props, options) {
-		options = options || {};
-		options.extend = options.extend || 'V';
+  constructor(props, options = {}) {
+    options.extend = options.extend || 'V';
 
-		super(props, options);
+    super(props, options);
 
-		prepareSchema(this);
-	}
+    prepareSchema(this);
+  }
 
-	getSubdocumentSchemaConstructor() {
-		return OrientSchema;
-	}
+  getSubdocumentSchemaConstructor() {
+    return OrientSchema;
+  }
 }

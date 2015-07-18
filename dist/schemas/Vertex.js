@@ -11,7 +11,7 @@ var _get = function get(object, property, receiver) { var desc = Object.getOwnPr
 var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
 Object.defineProperty(exports, '__esModule', {
-	value: true
+  value: true
 });
 
 var _OrientSchema$prepareSchema = require('./Schema');
@@ -21,27 +21,28 @@ var _OrientSchema$prepareSchema2 = _interopRequireWildcard(_OrientSchema$prepare
 var _Schema = require('livia');
 
 var Vertex = (function (_Schema$Vertex) {
-	function Vertex(props, options) {
-		_classCallCheck(this, Vertex);
+  function Vertex(props) {
+    var options = arguments[1] === undefined ? {} : arguments[1];
 
-		options = options || {};
-		options.extend = options.extend || 'V';
+    _classCallCheck(this, Vertex);
 
-		_get(Object.getPrototypeOf(Vertex.prototype), 'constructor', this).call(this, props, options);
+    options.extend = options.extend || 'V';
 
-		_OrientSchema$prepareSchema.prepareSchema(this);
-	}
+    _get(Object.getPrototypeOf(Vertex.prototype), 'constructor', this).call(this, props, options);
 
-	_inherits(Vertex, _Schema$Vertex);
+    _OrientSchema$prepareSchema.prepareSchema(this);
+  }
 
-	_createClass(Vertex, [{
-		key: 'getSubdocumentSchemaConstructor',
-		value: function getSubdocumentSchemaConstructor() {
-			return _OrientSchema$prepareSchema2['default'];
-		}
-	}]);
+  _inherits(Vertex, _Schema$Vertex);
 
-	return Vertex;
+  _createClass(Vertex, [{
+    key: 'getSubdocumentSchemaConstructor',
+    value: function getSubdocumentSchemaConstructor() {
+      return _OrientSchema$prepareSchema2['default'];
+    }
+  }]);
+
+  return Vertex;
 })(_Schema.Schema.Vertex);
 
 exports['default'] = Vertex;

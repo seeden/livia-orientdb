@@ -11,7 +11,7 @@ var _get = function get(object, property, receiver) { var desc = Object.getOwnPr
 var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
 Object.defineProperty(exports, '__esModule', {
-	value: true
+  value: true
 });
 
 var _OrientSchema$prepareSchema = require('./Schema');
@@ -27,40 +27,41 @@ var _RIDType2 = _interopRequireWildcard(_RIDType);
 var BASE_EDGE_CLASS = 'E';
 
 var Edge = (function (_Schema$Edge) {
-	function Edge(props, options) {
-		_classCallCheck(this, Edge);
+  function Edge(props) {
+    var options = arguments[1] === undefined ? {} : arguments[1];
 
-		options = options || {};
-		options.extend = options.extend || BASE_EDGE_CLASS;
+    _classCallCheck(this, Edge);
 
-		_get(Object.getPrototypeOf(Edge.prototype), 'constructor', this).call(this, props, options);
+    options.extend = options.extend || BASE_EDGE_CLASS;
 
-		_OrientSchema$prepareSchema.prepareSchema(this);
+    _get(Object.getPrototypeOf(Edge.prototype), 'constructor', this).call(this, props, options);
 
-		//add default properties
-		this.add({
-			'in': { type: _RIDType2['default'], required: true, notNull: true }, //from
-			out: { type: _RIDType2['default'], required: true, notNull: true } //to
-		});
+    _OrientSchema$prepareSchema.prepareSchema(this);
 
-		if (options.unique) {
-			this.index({
-				'in': 1,
-				out: 1
-			}, { unique: true });
-		}
-	}
+    // add default properties
+    this.add({
+      'in': { type: _RIDType2['default'], required: true, notNull: true }, // from
+      out: { type: _RIDType2['default'], required: true, notNull: true } // to
+    });
 
-	_inherits(Edge, _Schema$Edge);
+    if (options.unique) {
+      this.index({
+        'in': 1,
+        out: 1
+      }, { unique: true });
+    }
+  }
 
-	_createClass(Edge, [{
-		key: 'getSubdocumentSchemaConstructor',
-		value: function getSubdocumentSchemaConstructor() {
-			return _OrientSchema$prepareSchema2['default'];
-		}
-	}]);
+  _inherits(Edge, _Schema$Edge);
 
-	return Edge;
+  _createClass(Edge, [{
+    key: 'getSubdocumentSchemaConstructor',
+    value: function getSubdocumentSchemaConstructor() {
+      return _OrientSchema$prepareSchema2['default'];
+    }
+  }]);
+
+  return Edge;
 })(_Schema.Schema.Edge);
 
 exports['default'] = Edge;

@@ -7,52 +7,51 @@ var _createClass = (function () { function defineProperties(target, props) { for
 var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
 Object.defineProperty(exports, '__esModule', {
-	value: true
+  value: true
 });
 
 var _Type = require('livia');
 
 /*
-	Javascript long has support for 53bits only
-	http://www.w3schools.com/js/js_numbers.asp
+  Javascript long has support for 53bits only
+  http://www.w3schools.com/js/js_numbers.asp
 */
 
 var LongType = (function (_Type$Type) {
-	function LongType() {
-		_classCallCheck(this, LongType);
+  function LongType() {
+    _classCallCheck(this, LongType);
 
-		if (_Type$Type != null) {
-			_Type$Type.apply(this, arguments);
-		}
-	}
+    if (_Type$Type != null) {
+      _Type$Type.apply(this, arguments);
+    }
+  }
 
-	_inherits(LongType, _Type$Type);
+  _inherits(LongType, _Type$Type);
 
-	_createClass(LongType, [{
-		key: '_serialize',
-		value: function _serialize(value) {
-			return Number(value);
-		}
-	}, {
-		key: '_deserialize',
-		value: function _deserialize(value) {
-			return value;
-		}
-	}], [{
-		key: 'toString',
-		value: function toString() {
-			return 'Long';
-		}
-	}, {
-		key: 'getDbType',
-		value: function getDbType(options) {
-			return 'LONG';
-		}
-	}]);
+  _createClass(LongType, [{
+    key: '_serialize',
+    value: function _serialize(value) {
+      return Number(value);
+    }
+  }, {
+    key: '_deserialize',
+    value: function _deserialize(value) {
+      return value;
+    }
+  }], [{
+    key: 'toString',
+    value: function toString() {
+      return 'Long';
+    }
+  }, {
+    key: 'getDbType',
+    value: function getDbType() {
+      return 'LONG';
+    }
+  }]);
 
-	return LongType;
+  return LongType;
 })(_Type.Type.Type);
 
 exports['default'] = LongType;
-;
 module.exports = exports['default'];
