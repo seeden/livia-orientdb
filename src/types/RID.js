@@ -1,5 +1,5 @@
 import { Type } from 'livia';
-import { RecordID } from 'oriento';
+import { RecordID } from 'orientjs';
 
 export default class RIDType extends Type.Type {
   _serialize(value) {

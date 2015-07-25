@@ -20,9 +20,9 @@ var _Query = require('./Query');
 
 var _Query2 = _interopRequireWildcard(_Query);
 
-var _oriento = require('oriento');
+var _orientjs = require('orientjs');
 
-var _oriento2 = _interopRequireWildcard(_oriento);
+var _orientjs2 = _interopRequireWildcard(_orientjs);
 
 var _waterfall$each = require('async');
 
@@ -71,7 +71,7 @@ var OrientDBAdapter = (function (_Adapter) {
   }, {
     key: 'connect',
     value: function connect(callback) {
-      this._server = _oriento2['default'](this.options);
+      this._server = _orientjs2['default'](this.options);
       this._db = this._server.use(this.dbOptions);
 
       callback();
@@ -278,8 +278,8 @@ var OrientDBAdapter = (function (_Adapter) {
           }
 
           var schemaProp = schema.getPath(propName);
-          var schemaType = schema.getSchemaType(propName);
-          var type = schemaType.getDbType(schemaProp);
+          var SchemaType = schema.getSchemaType(propName);
+          var type = SchemaType.getDbType(schemaProp);
 
           if (schemaProp.options.metadata || schemaProp.options.ensure === false) {
             return cb2(null);
@@ -288,12 +288,12 @@ var OrientDBAdapter = (function (_Adapter) {
           _waterfall$each.waterfall([
           // create LinkedClass for embedded documents
           function (cb3) {
-            if (!schemaType.isAbstract(schemaProp)) {
+            if (!SchemaType.isAbstract(schemaProp)) {
               return cb3(null, null);
             }
 
-            var abstractClassName = schemaType.computeAbstractClassName(className, propName);
-            var embeddedSchema = schemaType.getEmbeddedSchema(schemaProp);
+            var abstractClassName = SchemaType.computeAbstractClassName(className, propName);
+            var embeddedSchema = SchemaType.getEmbeddedSchema(schemaProp);
 
             log('Founded abstract class: ' + abstractClassName + ' with schema: ' + !!embeddedSchema);
 
@@ -318,7 +318,7 @@ var OrientDBAdapter = (function (_Adapter) {
               readonly: options.readonly || false
             };
 
-            var additionalConfig = schemaType.getPropertyConfig(schemaProp);
+            var additionalConfig = SchemaType.getPropertyConfig(schemaProp);
             _extend2['default'](config, additionalConfig);
 
             if (model2) {

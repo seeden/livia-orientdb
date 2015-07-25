@@ -12,7 +12,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _Type = require('livia');
 
-var _RecordID = require('oriento');
+var _RecordID = require('orientjs');
 
 var RIDType = (function (_Type$Type) {
   function RIDType() {

@@ -1,6 +1,6 @@
 import { Adapter, Model, Index } from 'livia';
 import Query from './Query';
-import oriento from 'oriento';
+import orientjs from 'orientjs';
 import { waterfall, each } from 'async';
 import extend from 'node.extend';
 import debug from 'debug';
@@ -33,7 +33,7 @@ export default class OrientDBAdapter extends Adapter {
   }
 
   connect(callback) {
-    this._server = oriento(this.options);
+    this._server = orientjs(this.options);
     this._db = this._server.use(this.dbOptions);
 
     callback();
@@ -234,8 +234,8 @@ export default class OrientDBAdapter extends Adapter {
           }
 
           const schemaProp = schema.getPath(propName);
-          const schemaType = schema.getSchemaType(propName);
-          const type = schemaType.getDbType(schemaProp);
+          const SchemaType = schema.getSchemaType(propName);
+          const type = SchemaType.getDbType(schemaProp);
 
           if (schemaProp.options.metadata || schemaProp.options.ensure === false) {
             return cb2(null);
@@ -244,12 +244,12 @@ export default class OrientDBAdapter extends Adapter {
           waterfall([
             // create LinkedClass for embedded documents
             function(cb3) {
-              if (!schemaType.isAbstract(schemaProp)) {
+              if (!SchemaType.isAbstract(schemaProp)) {
                 return cb3(null, null);
               }
 
-              const abstractClassName = schemaType.computeAbstractClassName(className, propName);
-              const embeddedSchema = schemaType.getEmbeddedSchema(schemaProp);
+              const abstractClassName = SchemaType.computeAbstractClassName(className, propName);
+              const embeddedSchema = SchemaType.getEmbeddedSchema(schemaProp);
 
               log(`Founded abstract class: ${abstractClassName} with schema: ` + !!embeddedSchema);
 
@@ -274,7 +274,7 @@ export default class OrientDBAdapter extends Adapter {
                 readonly: options.readonly || false
               };
 
-              const additionalConfig = schemaType.getPropertyConfig(schemaProp);
+              const additionalConfig = SchemaType.getPropertyConfig(schemaProp);
               extend(config, additionalConfig);
 
               if (model2) {

@@ -16,9 +16,9 @@ Object.defineProperty(exports, '__esModule', {
 
 var _Query$Schema$Document = require('livia');
 
-var _OrientoQuery = require('oriento/lib/db/query');
+var _OrientjsQuery = require('orientjs/lib/db/query');
 
-var _OrientoQuery2 = _interopRequireWildcard(_OrientoQuery);
+var _OrientjsQuery2 = _interopRequireWildcard(_OrientjsQuery);
 
 var _debug = require('debug');
 
@@ -92,7 +92,7 @@ var OrientDBQuery = (function (_Query) {
         var currentPath = parentPath ? parentPath + '.' + parent : parent;
 
         var prop = schema.getPath(currentPath);
-        if (!prop || !prop.schemaType || !prop.schemaType.isArray) {
+        if (!prop || !prop.SchemaType || !prop.SchemaType.isArray) {
           return;
         }
 
@@ -158,7 +158,7 @@ var OrientDBQuery = (function (_Query) {
   }, {
     key: 'native',
     value: function native() {
-      return new _OrientoQuery2['default'](this.model.native);
+      return new _OrientjsQuery2['default'](this.model.native);
     }
   }, {
     key: 'exec',

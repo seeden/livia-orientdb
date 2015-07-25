@@ -1,5 +1,5 @@
 import { Query, Schema, Document } from 'livia';
-import OrientoQuery from 'oriento/lib/db/query';
+import OrientjsQuery from 'orientjs/lib/db/query';
 import debug from 'debug';
 import _ from 'lodash';
 
@@ -56,7 +56,7 @@ export default class OrientDBQuery extends Query {
         : parent;
 
       const prop = schema.getPath(currentPath);
-      if (!prop || !prop.schemaType || !prop.schemaType.isArray) {
+      if (!prop || !prop.SchemaType || !prop.SchemaType.isArray) {
         return;
       }
 
@@ -117,7 +117,7 @@ export default class OrientDBQuery extends Query {
   }
 
   native() {
-    return new OrientoQuery(this.model.native);
+    return new OrientjsQuery(this.model.native);
   }
 
   exec(callback = function() {}) {
