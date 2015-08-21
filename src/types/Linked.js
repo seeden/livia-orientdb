@@ -28,6 +28,9 @@ export default class Linked extends RID {
   toObject(options) {
     const value = this.value;
     if (value instanceof Document) {
+      if ((options.update || options.create) && value.get('@rid')) {
+        return value.get('@rid');
+      }
       return value.toObject(options);
     }
 

@@ -23,12 +23,29 @@ function stripslashes(str) {
 }
 
 export default class OrientDBQuery extends Query {
+  prepareValue(value) {
+    if (value && value instanceof Document && value.get('@rid')) {
+      return value.get('@rid');
+    }
+
+    return super.prepareValue(value);
+  }
+
   scalar(useScalar, castFn) {
     if (typeof castFn === 'undefined') {
       castFn = Number;
     }
 
     return super.scalar(useScalar, castFn);
+  }
+
+  options(options = {}) {
+    if (options.new) {
+      options.return = 'AFTER @this';
+      delete options['new'];
+    }
+
+    return super.options(options);
   }
 
   // fix contains for collections

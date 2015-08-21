@@ -24,19 +24,11 @@ export default class OrientDBAdapter extends Adapter {
     return this._dbOptions;
   }
 
-  get native() {
-    return this._db;
-  }
+  createConnection(callback) {
+    const server = orientjs(this.options);
+    const db = server.use(this.dbOptions);
 
-  get server() {
-    return this._server;
-  }
-
-  connect(callback) {
-    this._server = orientjs(this.options);
-    this._db = this._server.use(this.dbOptions);
-
-    callback();
+    callback(null, db);
   }
 
   query(model, options) {

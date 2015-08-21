@@ -1,40 +1,40 @@
 'use strict';
 
-var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
-
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
 var _Adapter = require('./Adapter');
 
-var _Adapter2 = _interopRequireWildcard(_Adapter);
+var _Adapter2 = _interopRequireDefault(_Adapter);
 
-var _Schema = require('./schemas/Schema');
+var _schemasSchema = require('./schemas/Schema');
 
-var _Schema2 = _interopRequireWildcard(_Schema);
+var _schemasSchema2 = _interopRequireDefault(_schemasSchema);
 
-var _Edge = require('./schemas/Edge');
+var _schemasEdge = require('./schemas/Edge');
 
-var _Edge2 = _interopRequireWildcard(_Edge);
+var _schemasEdge2 = _interopRequireDefault(_schemasEdge);
 
-var _Vertex = require('./schemas/Vertex');
+var _schemasVertex = require('./schemas/Vertex');
 
-var _Vertex2 = _interopRequireWildcard(_Vertex);
+var _schemasVertex2 = _interopRequireDefault(_schemasVertex);
 
-var _Type = require('./types/index');
+var _typesIndex = require('./types/index');
 
-var _Type2 = _interopRequireWildcard(_Type);
+var _typesIndex2 = _interopRequireDefault(_typesIndex);
 
-var _Index = require('livia');
+var _livia = require('livia');
 
-_Schema2['default'].Edge = _Edge2['default'];
-_Schema2['default'].Vertex = _Vertex2['default'];
-_Schema2['default'].ObjectId = _Type2['default'].RID;
+_schemasSchema2['default'].Edge = _schemasEdge2['default'];
+_schemasSchema2['default'].Vertex = _schemasVertex2['default'];
+_schemasSchema2['default'].ObjectId = _typesIndex2['default'].RID;
 
-_Adapter2['default'].Schema = _Schema2['default'];
-_Adapter2['default'].Type = _Type2['default'];
-_Adapter2['default'].Index = _Index.Index;
+_Adapter2['default'].Schema = _schemasSchema2['default'];
+_Adapter2['default'].Type = _typesIndex2['default'];
+_Adapter2['default'].Index = _livia.Index;
 
 exports['default'] = _Adapter2['default'];
 module.exports = exports['default'];

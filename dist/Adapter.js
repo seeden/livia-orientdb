@@ -1,42 +1,44 @@
 'use strict';
 
-var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
-
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var _Adapter$Model$Index = require('livia');
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _livia = require('livia');
 
 var _Query = require('./Query');
 
-var _Query2 = _interopRequireWildcard(_Query);
+var _Query2 = _interopRequireDefault(_Query);
 
 var _orientjs = require('orientjs');
 
-var _orientjs2 = _interopRequireWildcard(_orientjs);
+var _orientjs2 = _interopRequireDefault(_orientjs);
 
-var _waterfall$each = require('async');
+var _async = require('async');
 
-var _extend = require('node.extend');
+var _nodeExtend = require('node.extend');
 
-var _extend2 = _interopRequireWildcard(_extend);
+var _nodeExtend2 = _interopRequireDefault(_nodeExtend);
 
 var _debug = require('debug');
 
-var _debug2 = _interopRequireWildcard(_debug);
+var _debug2 = _interopRequireDefault(_debug);
 
-var log = _debug2['default']('livia-orientdb:adapter');
+var log = (0, _debug2['default'])('livia-orientdb:adapter');
 
 var OrientDBAdapter = (function (_Adapter) {
+  _inherits(OrientDBAdapter, _Adapter);
+
   function OrientDBAdapter(options, dbOptions) {
     _classCallCheck(this, OrientDBAdapter);
 
@@ -51,30 +53,13 @@ var OrientDBAdapter = (function (_Adapter) {
     this._dbOptions = dbOptions;
   }
 
-  _inherits(OrientDBAdapter, _Adapter);
-
   _createClass(OrientDBAdapter, [{
-    key: 'dbOptions',
-    get: function () {
-      return this._dbOptions;
-    }
-  }, {
-    key: 'native',
-    get: function () {
-      return this._db;
-    }
-  }, {
-    key: 'server',
-    get: function () {
-      return this._server;
-    }
-  }, {
-    key: 'connect',
-    value: function connect(callback) {
-      this._server = _orientjs2['default'](this.options);
-      this._db = this._server.use(this.dbOptions);
+    key: 'createConnection',
+    value: function createConnection(callback) {
+      var server = (0, _orientjs2['default'])(this.options);
+      var db = server.use(this.dbOptions);
 
-      callback();
+      callback(null, db);
     }
   }, {
     key: 'query',
@@ -86,15 +71,15 @@ var OrientDBAdapter = (function (_Adapter) {
     value: function getIndexType(options) {
       var type = options.unique ? 'UNIQUE' : 'NOTUNIQUE';
 
-      if (options.type === _Adapter$Model$Index.Index.DICTIONARY) {
+      if (options.type === _livia.Index.DICTIONARY) {
         type = 'DICTIONARY';
-      } else if (options.type === _Adapter$Model$Index.Index.FULLTEXT) {
+      } else if (options.type === _livia.Index.FULLTEXT) {
         if (options.engine === 'lucene') {
           return 'FULLTEXT ENGINE LUCENE';
         }
 
         type = 'FULLTEXT';
-      } else if (options.type === _Adapter$Model$Index.Index.SPATIAL) {
+      } else if (options.type === _livia.Index.SPATIAL) {
         return 'SPATIAL ENGINE LUCENE';
       }
 
@@ -112,7 +97,7 @@ var OrientDBAdapter = (function (_Adapter) {
       var className = model.name;
       var schema = model.schema;
 
-      _waterfall$each.waterfall([function (cb) {
+      (0, _async.waterfall)([function (cb) {
         // todo speed up for each class is same
         db.index.list(true).then(function (indexes) {
           // filter indexes for current class
@@ -134,7 +119,7 @@ var OrientDBAdapter = (function (_Adapter) {
           return cb(null, indexes);
         }
 
-        _waterfall$each.each(indexes, function (index, cb2) {
+        (0, _async.each)(indexes, function (index, cb2) {
           var name = index.name;
 
           var schemaIndexName = name;
@@ -164,7 +149,7 @@ var OrientDBAdapter = (function (_Adapter) {
       function (indexes, cb) {
         var configs = [];
 
-        _waterfall$each.each(schema.indexNames, function (indexName, cb3) {
+        (0, _async.each)(schema.indexNames, function (indexName, cb3) {
           var index = schema.getIndex(indexName);
 
           // add class name to indexName
@@ -219,13 +204,13 @@ var OrientDBAdapter = (function (_Adapter) {
     value: function ensureClass(model) {
       var _this = this;
 
-      var callback = arguments[1] === undefined ? function () {} : arguments[1];
+      var callback = arguments.length <= 1 || arguments[1] === undefined ? function () {} : arguments[1];
 
       var db = this.native;
       var schema = model.schema;
       var className = model.name;
 
-      _waterfall$each.waterfall([
+      (0, _async.waterfall)([
       // prepare base class
       function (cb) {
         db['class'].get(className).then(function (OClass) {
@@ -248,7 +233,7 @@ var OrientDBAdapter = (function (_Adapter) {
           return cb(null, OClass, oProperties);
         }
 
-        _waterfall$each.each(oProperties, function (prop, cb2) {
+        (0, _async.each)(oProperties, function (prop, cb2) {
           if (schema.has(prop.name)) {
             return cb2(null);
           }
@@ -268,7 +253,7 @@ var OrientDBAdapter = (function (_Adapter) {
       function (OClass, oProperties, cb) {
         var properties = schema.propertyNames();
 
-        _waterfall$each.each(properties, function (propName, cb2) {
+        (0, _async.each)(properties, function (propName, cb2) {
           var prop = oProperties.find(function (p) {
             return p.name === propName;
           });
@@ -285,7 +270,7 @@ var OrientDBAdapter = (function (_Adapter) {
             return cb2(null);
           }
 
-          _waterfall$each.waterfall([
+          (0, _async.waterfall)([
           // create LinkedClass for embedded documents
           function (cb3) {
             if (!SchemaType.isAbstract(schemaProp)) {
@@ -301,8 +286,8 @@ var OrientDBAdapter = (function (_Adapter) {
               return cb3(null, null);
             }
 
-            return new _Adapter$Model$Index.Model(abstractClassName, embeddedSchema, model.connection, {
-              abstract: true
+            return new _livia.Model(abstractClassName, embeddedSchema, model.connection, {
+              'abstract': true
             }, cb3);
           }, function (model2, cb3) {
             var options = schemaProp.options;
@@ -319,7 +304,7 @@ var OrientDBAdapter = (function (_Adapter) {
             };
 
             var additionalConfig = SchemaType.getPropertyConfig(schemaProp);
-            _extend2['default'](config, additionalConfig);
+            (0, _nodeExtend2['default'])(config, additionalConfig);
 
             if (model2) {
               config.linkedClass = model2.name;
@@ -351,10 +336,15 @@ var OrientDBAdapter = (function (_Adapter) {
         callback(null, model);
       });
     }
+  }, {
+    key: 'dbOptions',
+    get: function get() {
+      return this._dbOptions;
+    }
   }]);
 
   return OrientDBAdapter;
-})(_Adapter$Model$Index.Adapter);
+})(_livia.Adapter);
 
 exports['default'] = OrientDBAdapter;
 module.exports = exports['default'];

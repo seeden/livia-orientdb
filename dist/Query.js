@@ -1,35 +1,35 @@
 'use strict';
 
-var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
-
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var _Query$Schema$Document = require('livia');
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _OrientjsQuery = require('orientjs/lib/db/query');
+var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-var _OrientjsQuery2 = _interopRequireWildcard(_OrientjsQuery);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _livia = require('livia');
+
+var _orientjsLibDbQuery = require('orientjs/lib/db/query');
+
+var _orientjsLibDbQuery2 = _interopRequireDefault(_orientjsLibDbQuery);
 
 var _debug = require('debug');
 
-var _debug2 = _interopRequireWildcard(_debug);
+var _debug2 = _interopRequireDefault(_debug);
 
-var _import = require('lodash');
+var _lodash = require('lodash');
 
-var _import2 = _interopRequireWildcard(_import);
+var _lodash2 = _interopRequireDefault(_lodash);
 
-var log = _debug2['default']('livia-orientdb:query');
-var Operation = _Query$Schema$Document.Query.Operation;
+var log = (0, _debug2['default'])('livia-orientdb:query');
+var Operation = _livia.Query.Operation;
 
 function stripslashes(str) {
   return (str + '').replace(/\\(.?)/g, function (s, n1) {
@@ -47,17 +47,24 @@ function stripslashes(str) {
 }
 
 var OrientDBQuery = (function (_Query) {
+  _inherits(OrientDBQuery, _Query);
+
   function OrientDBQuery() {
     _classCallCheck(this, OrientDBQuery);
 
-    if (_Query != null) {
-      _Query.apply(this, arguments);
-    }
+    _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'constructor', this).apply(this, arguments);
   }
 
-  _inherits(OrientDBQuery, _Query);
-
   _createClass(OrientDBQuery, [{
+    key: 'prepareValue',
+    value: function prepareValue(value) {
+      if (value && value instanceof _livia.Document && value.get('@rid')) {
+        return value.get('@rid');
+      }
+
+      return _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'prepareValue', this).call(this, value);
+    }
+  }, {
     key: 'scalar',
     value: function scalar(useScalar, castFn) {
       if (typeof castFn === 'undefined') {
@@ -67,9 +74,21 @@ var OrientDBQuery = (function (_Query) {
       return _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'scalar', this).call(this, useScalar, castFn);
     }
   }, {
-    key: 'queryLanguage',
+    key: 'options',
+    value: function options() {
+      var _options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      if (_options['new']) {
+        _options['return'] = 'AFTER @this';
+        delete _options['new'];
+      }
+
+      return _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'options', this).call(this, _options);
+    }
 
     // fix contains for collections
+  }, {
+    key: 'queryLanguage',
     value: function queryLanguage(conditions, parentPath) {
       var model = this.model;
 
@@ -100,7 +119,7 @@ var OrientDBQuery = (function (_Query) {
         delete conditions[propertyName];
 
         var subConditions = conditions[parent] || {};
-        if (!_import2['default'].isPlainObject(subConditions)) {
+        if (!_lodash2['default'].isPlainObject(subConditions)) {
           subConditions = {
             $eq: subConditions
           };
@@ -136,14 +155,14 @@ var OrientDBQuery = (function (_Query) {
     value: function fixEmbeddedEscape(record, isChild) {
       var _this = this;
 
-      if (!_import2['default'].isObject(record)) {
+      if (!_lodash2['default'].isObject(record)) {
         return record;
       }
 
       Object.keys(record).forEach(function (key) {
         var value = record[key];
 
-        if (_import2['default'].isObject(value)) {
+        if (_lodash2['default'].isObject(value)) {
           record[key] = _this.fixEmbeddedEscape(value, true);
           return;
         }
@@ -158,14 +177,14 @@ var OrientDBQuery = (function (_Query) {
   }, {
     key: 'native',
     value: function native() {
-      return new _OrientjsQuery2['default'](this.model.native);
+      return new _orientjsLibDbQuery2['default'](this.model.native);
     }
   }, {
     key: 'exec',
     value: function exec() {
       var _this2 = this;
 
-      var callback = arguments[0] === undefined ? function () {} : arguments[0];
+      var callback = arguments.length <= 0 || arguments[0] === undefined ? function () {} : arguments[0];
 
       var model = this.model;
       var schema = model.schema;
@@ -178,7 +197,7 @@ var OrientDBQuery = (function (_Query) {
       var q = query;
 
       var target = this._target;
-      if (target instanceof _Query$Schema$Document.Document) {
+      if (target instanceof _livia.Document) {
         target = target.get('@rid');
         if (!target) {
           throw new Error('Target is document but his RID is not defined');
@@ -187,9 +206,9 @@ var OrientDBQuery = (function (_Query) {
 
       var select = this._select || '*';
 
-      var isGraph = schema instanceof _Query$Schema$Document.Schema.Graph;
+      var isGraph = schema instanceof _livia.Schema.Graph;
       if (isGraph) {
-        var graphType = schema instanceof _Query$Schema$Document.Schema.Edge ? 'EDGE' : 'VERTEX';
+        var graphType = schema instanceof _livia.Schema.Edge ? 'EDGE' : 'VERTEX';
 
         if (operation === Operation.INSERT) {
           query = query.create(graphType, target);
@@ -214,7 +233,7 @@ var OrientDBQuery = (function (_Query) {
 
       if (this._from) {
         var from = this._from;
-        if (from instanceof _Query$Schema$Document.Document) {
+        if (from instanceof _livia.Document) {
           from = from.get('@rid');
           if (!from) {
             throw new Error('From is document but his rid is not defined');
@@ -225,7 +244,7 @@ var OrientDBQuery = (function (_Query) {
 
       if (this._to) {
         var to = this._to;
-        if (to instanceof _Query$Schema$Document.Document) {
+        if (to instanceof _livia.Document) {
           to = to.get('@rid');
           if (!to) {
             throw new Error('To is document but his rid is not defined');
@@ -324,7 +343,7 @@ var OrientDBQuery = (function (_Query) {
   }]);
 
   return OrientDBQuery;
-})(_Query$Schema$Document.Query);
+})(_livia.Query);
 
 exports['default'] = OrientDBQuery;
 module.exports = exports['default'];
