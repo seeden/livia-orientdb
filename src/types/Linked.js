@@ -3,54 +3,70 @@ import _ from 'lodash';
 import { Document } from 'livia';
 
 export default class Linked extends RID {
+  // START - copy from livia linked
   _serialize(value) {
-    if (_.isPlainObject(value)) {
-      const doc = this._value = (this._value instanceof Document)
-        ? this._value
-        : new this.options.type({});
-
-      doc.set(value);
-      return doc;
+    if (value instanceof Document) {
+      return value;
+    } else if (_.isPlainObject(value)) {
+      return new this.options.type(value);
     }
 
     return super._serialize(value);
   }
 
-  toJSON(options) {
-    const value = this.value;
+  get(path) {
+    if (this._value instanceof Document) {
+      return this._value.get(path);
+    }
+
+    super.get(path);
+  }
+
+  set(path, value) {
+    if (this._value instanceof Document) {
+      return this._value.set(path, value);
+    }
+
+    super.set(path, value);
+  }
+
+  get isModified() {
+    if (this._value instanceof Document) {
+      return this._value.isModified();
+    }
+
+    return super.isModified;
+  }
+  // END - copy from livia linked
+
+  toJSON(options = {}) {
+    const value = this._value;
+
     if (value instanceof Document) {
-      return value.toJSON(options);
+      const json = value.toJSON(options);
+      if ((options.update || options.create) && value.get('@rid')) {
+        return json['@rid'];
+      }
+
+      return json;
     }
 
     return super.toJSON(options);
   }
 
-  toObject(options) {
-    const value = this.value;
+  toObject(options = {}) {
+    const value = this._value;
+
     if (value instanceof Document) {
+      const obj = value.toObject(options);
       if ((options.update || options.create) && value.get('@rid')) {
-        return value.get('@rid');
+        return obj['@rid'];
       }
-      return value.toObject(options);
+
+      return obj;
     }
 
     return super.toObject(options);
-  }
-
-  get isModified() {
-    if (this._value instanceof Document) {
-      let isModified = false;
-
-      this._value.forEach(true, function(prop) {
-        if (prop.isModified) {
-          isModified = true;
-        }
-      });
-
-      return isModified;
-    }
-
-    return super.isModified;
   }
 
   static getPropertyConfig(prop) {

@@ -81,6 +81,11 @@ var OrientDBQuery = (function (_Query) {
       if (_options['new']) {
         _options['return'] = 'AFTER @this';
         delete _options['new'];
+
+        if (_options.upsert) {
+          _options.scalar = false;
+          _options.first = true;
+        }
       }
 
       return _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'options', this).call(this, _options);
@@ -266,13 +271,17 @@ var OrientDBQuery = (function (_Query) {
         query.set(this._set);
       }
 
+      if (this._upsert) {
+        query.upsert();
+      }
+
       this._operators.forEach(function (operator) {
         query = query[operator.type](operator.query);
       });
 
       query.addParams(this._params);
 
-      if (!this._scalar && (operation === Operation.SELECT || operation === Operation.INSERT)) {
+      if (!this._scalar && (operation === Operation.SELECT || operation === Operation.INSERT || this._return)) {
         query = query.transform(function (record) {
           record = _this2.fixRecord(record);
 

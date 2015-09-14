@@ -2,7 +2,6 @@ import { Adapter, Model, Index } from 'livia';
 import Query from './Query';
 import orientjs from 'orientjs';
 import { waterfall, each } from 'async';
-import extend from 'node.extend';
 import debug from 'debug';
 
 const log = debug('livia-orientdb:adapter');
@@ -149,7 +148,8 @@ export default class OrientDBAdapter extends Adapter {
             'class': className,
             name: indexName,
             properties: Object.keys(index.properties),
-            type: adapter.getIndexType(index)
+            type: adapter.getIndexType(index),
+            metadata: index.metadata
           };
 
           configs.push(config);
@@ -254,6 +254,7 @@ export default class OrientDBAdapter extends Adapter {
               }, cb3);
             }, function(model2, cb3) {
               const options = schemaProp.options;
+              const additionalConfig = SchemaType.getPropertyConfig(schemaProp);
 
               const config = {
                 name: propName,
@@ -263,11 +264,9 @@ export default class OrientDBAdapter extends Adapter {
                 max: typeof options.max !== 'undefined' ? options.max : null,
                 collate: options.collate || 'default',
                 notNull: options.notNull || false,
-                readonly: options.readonly || false
+                readonly: options.readonly || false,
+                ...additionalConfig
               };
-
-              const additionalConfig = SchemaType.getPropertyConfig(schemaProp);
-              extend(config, additionalConfig);
 
               if (model2) {
                 config.linkedClass = model2.name;

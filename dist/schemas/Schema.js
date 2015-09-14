@@ -51,8 +51,8 @@ var mathFunctions = ['count', 'avg', 'sum', 'min', 'max', 'median', 'percentile'
 
 function prepareSchema(schema) {
   schema.add({
-    '@type': { type: String, readonly: true, metadata: true, 'default': 'document' },
-    '@class': { type: String, readonly: true, metadata: true, 'default': getDefaultClassName },
+    '@type': { type: String, readonly: true, metadata: true, constant: 'd' },
+    '@class': { type: String, readonly: true, metadata: true, constant: getDefaultClassName },
     '@rid': { type: _types2['default'].RID, readonly: true, metadata: true, isRecordID: true },
     '@version': { type: Number, readonly: true, metadata: true },
     '@fieldTypes': { type: String, readonly: true, metadata: true }

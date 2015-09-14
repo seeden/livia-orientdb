@@ -112,8 +112,7 @@ describe('Connection', function() {
 
       schema.add({
         articles: {
-          type: [ArticleModel],
-          required: true
+          type: [ArticleModel]
         }
       });
 
@@ -163,6 +162,34 @@ describe('Connection', function() {
 
       rid = userSaved.rid;
       done();
+    });
+  });
+
+  it('should be able to create a document by upsert', function(done) {
+    User.update({
+      name: 'Zlatko Fedor 2'
+    }, {
+      name: 'Zlatko Fedor 2',
+      address: {
+        street: 'Huskova 19'
+      }
+    }, {
+      upsert: true,
+      new: true
+    }, function(err, userSaved) {
+      if(err) {
+        throw err;
+      }
+
+      should.exist(userSaved);
+
+      userSaved.remove(function(err2){
+        if(err2) {
+          throw err2;
+        }
+
+        done();
+      });
     });
   });
 
@@ -218,11 +245,11 @@ describe('Connection', function() {
       }
 
       user.set({
-        'address.street': 'Svabska',
         points: 45,
         address: {
           city: 'Presov'
-        }
+        },
+        'address.street': 'Svabska',
       });
 
       user.points.should.equal(45);
@@ -448,3 +475,265 @@ describe('E', function() {
     });
   });
 });
+
+
+
+describe('RID', function() {
+  it('should be able to create edge model extended from E', function(done) {
+    const User = connection.model('User');
+
+    const likeSchema = new Schema({
+      user: { type: User, required: true },
+      value: { type: Number, default: 2 }
+    });
+
+    const Like = connection.model('Like', likeSchema, function(err) {
+      if (err) {
+        throw err;
+      }
+
+      done();
+    });
+  });
+
+  let user = null;
+  let like = null;
+  let like2 = null;
+
+  it('should be able to create user', function(done) {
+    const User = connection.model('User');
+
+    const user1 = new User({
+      name: 'Zlatko Fedor RID',
+      address: {
+        street: 'Huskova 19'
+      }
+    });
+
+    user1.save(function(err, newUser) {
+      if (err) {
+        throw err;
+      }
+
+      should.exist(newUser);
+
+      const rid = newUser.get('@rid').toString();
+      should.exist(rid);
+
+      user = newUser;
+
+      user1.toJSON({ metadata: true }).should.containEql({
+        '@rid': rid,
+        '@type': 'd',
+        '@class': 'User',
+        name: 'Zlatko Fedor RID',
+        isAdmin: false,
+        points: 30,
+        hooked: 'Hooked text',
+        address:
+         { city: 'Kosice',
+           street: 'Huskova 19',
+           '@type': 'd',
+           '@class': 'UserAAddress',
+           zip: null },
+        tags: [ 'Test' ],
+        images: []
+      });
+
+      newUser.toJSON({ metadata: true }).should.containEql({
+        '@rid': rid,
+        '@type': 'd',
+        '@class': 'User',
+        name: 'Zlatko Fedor RID',
+        isAdmin: false,
+        points: 30,
+        hooked: 'Hooked text',
+        address:
+         { city: 'Kosice',
+           street: 'Huskova 19',
+           '@type': 'd',
+           '@class': 'UserAAddress',
+           zip: null },
+        tags: [ 'Test' ],
+        images: []
+      });
+
+      done();
+    });
+  });
+
+  it('should be able to create like by existing user', function(done) {
+    const Like = connection.model('Like');
+
+    const like1 = new Like({
+      user: user
+    });
+
+    const json = like1.toJSON({ metadata: true });
+    json.user.should.containEql({
+      '@rid': user.get('@rid').toString(),
+      '@class': 'User'
+    });
+
+    json.should.containEql({
+      '@class': 'Like'
+    });
+
+    const jsonCreate = like1.toJSON({ metadata: true, create: true });
+    jsonCreate.should.containEql({
+      '@class': 'Like',
+      user: json.user['@rid']
+    });
+
+
+
+    const obj = like1.toObject({ metadata: true });
+    obj.user.should.containEql({
+      '@rid': user.get('@rid'),
+      '@class': 'User'
+    });
+
+    obj.should.containEql({
+      '@class': 'Like'
+    });
+
+    const objCreate = like1.toObject({ metadata: true, create: true });
+    objCreate.should.containEql({
+      '@class': 'Like',
+      user: obj.user['@rid']
+    });
+
+
+    like1.save(function(err, newLike) {
+      if(err) {
+        throw err;
+      }
+
+      should.exist(newLike);
+
+      like = newLike;
+
+      const rid = newLike.get('@rid').toString();
+      should.exist(rid);
+
+      like1.toJSON({ metadata: true }).should.containEql({
+        '@class': 'Like',
+        '@type': 'd',
+        'value': 2,
+        'user': json.user['@rid']
+      });
+
+      done();
+    });
+  });
+
+
+  it('should be able to create like by non existing user', function(done) {
+    const validObj = {
+      '@class': 'Like',
+      value: 2,
+      user: {
+        '@type': 'd',
+        '@class': 'User',
+        name: 'Adam',
+        address: {
+          '@class': 'UserAAddress',
+          '@type': 'd',
+          city: 'Brezno',
+          zip: null
+        },
+        articles: [],
+        images: [],
+        isAdmin: false,
+        name: 'Adam',
+        points: 30,
+        tags: []
+      }
+    };
+
+    const Like = connection.model('Like');
+
+    const like1 = new Like({
+      user: {
+        name: 'Adam',
+        address: {
+          city: 'Brezno'
+        }
+      }
+    });
+
+    const json = like1.toJSON({ metadata: true });
+    json.should.containEql(validObj);
+
+    const jsonCreate = like1.toJSON({ metadata: true, create: true });
+    jsonCreate.should.containEql(validObj);
+
+
+    const obj = like1.toObject({ metadata: true });
+    obj.should.containEql(validObj);
+
+    const objCreate = like1.toObject({ metadata: true, create: true });
+    objCreate.should.containEql(validObj);
+
+
+    like1.save(function(err, newLike) {
+      if(err) {
+        throw err;
+      }
+
+      should.exist(newLike);
+
+      const rid = newLike.get('@rid').toString();
+      should.exist(rid);
+
+      like1.toJSON({ metadata: true }).should.containEql({
+        '@class': 'Like',
+        '@type': 'd',
+        'value': 2
+      });
+
+      should.exist(like1.user);
+
+      const User = connection.model('User');
+      User.remove(like1.user, function(err2) {
+        if (err2) {
+          throw err2;
+        }
+
+        like1.remove(function(err3) {
+          if (err3) {
+            throw err3;
+          }
+
+          done();
+        });
+      });
+    });
+
+  });
+
+  it('should be able to remove user', function(done) {
+    user.remove(function(err, total) {
+      if(err) {
+        throw err;
+      }
+
+      total.should.equal(1);
+
+      done();
+    });
+  });
+
+  it('should be able to remove like', function(done) {
+    like.remove(function(err, total) {
+      if(err) {
+        throw err;
+      }
+
+      total.should.equal(1);
+
+      done();
+    });
+  });
+});
+

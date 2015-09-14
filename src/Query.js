@@ -43,6 +43,11 @@ export default class OrientDBQuery extends Query {
     if (options.new) {
       options.return = 'AFTER @this';
       delete options['new'];
+
+      if (options.upsert) {
+        options.scalar = false;
+        options.first = true;
+      }
     }
 
     return super.options(options);
@@ -218,13 +223,17 @@ export default class OrientDBQuery extends Query {
       query.set(this._set);
     }
 
+    if (this._upsert) {
+      query.upsert();
+    }
+
     this._operators.forEach(function(operator) {
       query = query[operator.type](operator.query);
     });
 
     query.addParams(this._params);
 
-    if (!this._scalar && (operation === Operation.SELECT || operation === Operation.INSERT)) {
+    if (!this._scalar && (operation === Operation.SELECT || operation === Operation.INSERT || this._return)) {
       query = query.transform(record => {
         record = this.fixRecord(record);
 

@@ -2,7 +2,6 @@ import should from "should";
 import { Schema } from 'livia';
 import mongoose, {Schema as SchemaMongoose} from 'mongoose';
 import { waterfall } from "async";
-import extend from "node.extend";
 
 
 describe('Mongoose compatibility', function() {
@@ -118,17 +117,19 @@ describe('Mongoose compatibility', function() {
   }
 
   it('should be able to create simple orientose schema', function() {
-    schema = new Schema(extend(true, {}, basicSchema, {
+    schema = new Schema({
+      ...basicSchema,
       sub: [new Schema(subSchema)]
-    }));
+    });
     applyVirtual(schema);
     validateBasicSchema(schema);
   });
 
   it('should be able to create simple mongoose schema', function() {
-    schemaMongoose = new SchemaMongoose(extend(true, {}, basicSchema, {
+    schemaMongoose = new SchemaMongoose({
+      ...basicSchema,
       sub: [new SchemaMongoose(subSchema)]
-    }));
+    });
     applyVirtual(schemaMongoose);
     validateBasicSchema(schemaMongoose);
   });
