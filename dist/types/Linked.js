@@ -121,6 +121,12 @@ var Linked = (function (_RID) {
         };
       }
 
+      if (prop.options && prop.options.ref) {
+        return {
+          linkedClass: prop.options.ref
+        };
+      }
+
       return {};
     }
   }]);

@@ -19,8 +19,8 @@ var _livia = require('livia');
   http://www.w3schools.com/js/js_numbers.asp
 */
 
-var LongType = (function (_Type$Type) {
-  _inherits(LongType, _Type$Type);
+var LongType = (function (_Types$Type) {
+  _inherits(LongType, _Types$Type);
 
   function LongType() {
     _classCallCheck(this, LongType);
@@ -51,7 +51,7 @@ var LongType = (function (_Type$Type) {
   }]);
 
   return LongType;
-})(_livia.Type.Type);
+})(_livia.Types.Type);
 
 exports['default'] = LongType;
 module.exports = exports['default'];

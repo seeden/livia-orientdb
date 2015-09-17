@@ -6,6 +6,8 @@ import Edge from '../src/schemas/Edge';
 import Vertex from '../src/schemas/Vertex';
 import { waterfall } from "async";
 
+const { Linked, ObjectId } = Schema.Types;
+
 var connection = null;
 
 describe('Schema', function() {
@@ -709,7 +711,6 @@ describe('RID', function() {
         });
       });
     });
-
   });
 
   it('should be able to remove user', function(done) {
@@ -731,6 +732,102 @@ describe('RID', function() {
       }
 
       total.should.equal(1);
+
+      done();
+    });
+  });
+
+  it('should be able to create model Comment ', function(done) {
+    const User = connection.model('User');
+
+    const commentSchema = new Schema({
+      user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+      users: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+      }],
+      usersSet: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        set: true
+      }],
+      userDirect: { type: User, required: true },
+      usersDirect: [User],
+      usersSetDirect: [{
+        type: User,
+        set: true
+      }],
+
+      userEmbedded: {
+        name: { type: String },
+        firstName: String
+      },
+      usersEmbedded: [{
+        name: { type: String },
+        firstName: String
+      }],
+      usersSetEmbedded: [{
+        type: {
+          name: { type: String },
+          firstName: String
+        },
+        set: true
+      }],
+      value: { type: Number, default: 2 }
+    });
+
+    // linked
+    const userPath = commentSchema.getPath('user');
+    userPath.SchemaType.should.equal(Linked);
+    userPath.SchemaType.isEmbedded(userPath).should.equal(false);
+    userPath.SchemaType.getDbType(userPath).should.equal('LINK');
+
+    const usersPath = commentSchema.getPath('users');
+    usersPath.SchemaType.should.equal(Schema.Types.Array);
+    usersPath.SchemaType.isEmbedded(usersPath).should.equal(false);
+    usersPath.SchemaType.getDbType(usersPath).should.equal('LINKLIST');
+
+    const usersSetPath = commentSchema.getPath('usersSet');
+    usersSetPath.SchemaType.should.equal(Schema.Types.Array);
+    usersSetPath.SchemaType.isEmbedded(usersSetPath).should.equal(false);
+    usersSetPath.SchemaType.getDbType(usersSetPath).should.equal('LINKSET');
+
+    // direct linked
+    const userPathDirect = commentSchema.getPath('userDirect');
+    userPathDirect.SchemaType.should.equal(Linked);
+    userPathDirect.SchemaType.isEmbedded(userPathDirect).should.equal(false);
+    userPathDirect.SchemaType.getDbType(userPathDirect).should.equal('LINK');
+
+    const usersPathDirect = commentSchema.getPath('usersDirect');
+    usersPathDirect.SchemaType.should.equal(Schema.Types.Array);
+    usersPathDirect.SchemaType.isEmbedded(usersPathDirect).should.equal(false);
+    usersPathDirect.SchemaType.getDbType(usersPathDirect).should.equal('LINKLIST');
+
+    const usersSetPathDirect = commentSchema.getPath('usersSetDirect');
+    usersSetPathDirect.SchemaType.should.equal(Schema.Types.Array);
+    usersSetPathDirect.SchemaType.isEmbedded(usersSetPathDirect).should.equal(false);
+    usersSetPathDirect.SchemaType.getDbType(usersSetPathDirect).should.equal('LINKSET');
+
+    // embedded
+    const userPathEmbedded = commentSchema.getPath('userEmbedded');
+    userPathEmbedded.SchemaType.should.equal(Schema.Types.Object);
+    userPathEmbedded.SchemaType.isEmbedded(userPathEmbedded).should.equal(true);
+    userPathEmbedded.SchemaType.getDbType(userPathEmbedded).should.equal('EMBEDDED');
+
+    const usersPathEmbedded = commentSchema.getPath('usersEmbedded');
+    usersPathEmbedded.SchemaType.should.equal(Schema.Types.Array);
+    usersPathEmbedded.SchemaType.isEmbedded(usersPathEmbedded).should.equal(true);
+    usersPathEmbedded.SchemaType.getDbType(usersPathEmbedded).should.equal('EMBEDDEDLIST');
+
+    const usersSetPathEmbedded = commentSchema.getPath('usersSetEmbedded');
+    usersSetPathEmbedded.SchemaType.should.equal(Schema.Types.Array);
+    usersSetPathEmbedded.SchemaType.isEmbedded(usersSetPathEmbedded).should.equal(true);
+    usersSetPathEmbedded.SchemaType.getDbType(usersSetPathEmbedded).should.equal('EMBEDDEDSET');
+
+    const Comment = connection.model('Comment', commentSchema, function(err) {
+      if (err) {
+        throw err;
+      }
 
       done();
     });

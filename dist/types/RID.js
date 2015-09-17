@@ -16,8 +16,8 @@ var _livia = require('livia');
 
 var _orientjs = require('orientjs');
 
-var RIDType = (function (_Type$Type) {
-  _inherits(RIDType, _Type$Type);
+var RIDType = (function (_Types$Type) {
+  _inherits(RIDType, _Types$Type);
 
   function RIDType() {
     _classCallCheck(this, RIDType);
@@ -63,7 +63,7 @@ var RIDType = (function (_Type$Type) {
   }]);
 
   return RIDType;
-})(_livia.Type.Type);
+})(_livia.Types.Type);
 
 exports['default'] = RIDType;
 module.exports = exports['default'];

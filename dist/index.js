@@ -30,11 +30,8 @@ var _livia = require('livia');
 
 _schemasSchema2['default'].Edge = _schemasEdge2['default'];
 _schemasSchema2['default'].Vertex = _schemasVertex2['default'];
-_schemasSchema2['default'].ObjectId = _typesIndex2['default'].RID;
 
-_Adapter2['default'].Schema = _schemasSchema2['default'];
-_Adapter2['default'].Type = _typesIndex2['default'];
-_Adapter2['default'].Index = _livia.Index;
-
+exports.Schema = _schemasSchema2['default'];
+exports.Types = _typesIndex2['default'];
+exports.Index = _livia.Index;
 exports['default'] = _Adapter2['default'];
-module.exports = exports['default'];

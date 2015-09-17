@@ -19,8 +19,8 @@ var _livia = require('livia');
   http://www.w3schools.com/js/js_numbers.asp
 */
 
-var DoubleType = (function (_Type$Type) {
-  _inherits(DoubleType, _Type$Type);
+var DoubleType = (function (_Types$Type) {
+  _inherits(DoubleType, _Types$Type);
 
   function DoubleType() {
     _classCallCheck(this, DoubleType);
@@ -51,7 +51,7 @@ var DoubleType = (function (_Type$Type) {
   }]);
 
   return DoubleType;
-})(_livia.Type.Type);
+})(_livia.Types.Type);
 
 exports['default'] = DoubleType;
 module.exports = exports['default'];

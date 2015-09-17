@@ -1,7 +1,7 @@
-import { Type } from 'livia';
+import { Types } from 'livia';
 import { RecordID } from 'orientjs';
 
-export default class RIDType extends Type.Type {
+export default class RIDType extends Types.Type {
   _serialize(value) {
     const record = new RecordID(value);
     if (!record) {

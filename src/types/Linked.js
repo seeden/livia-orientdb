@@ -76,6 +76,12 @@ export default class Linked extends RID {
       };
     }
 
+    if (prop.options && prop.options.ref) {
+      return {
+        linkedClass: prop.options.ref
+      };
+    }
+
     return {};
   }
 }

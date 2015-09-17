@@ -1,11 +1,11 @@
-import { Type } from 'livia';
+import { Types } from 'livia';
 
 /*
   Javascript long has support for 53bits only
   http://www.w3schools.com/js/js_numbers.asp
 */
 
-export default class DoubleType extends Type.Type {
+export default class DoubleType extends Types.Type {
   _serialize(value) {
     return Number(value);
   }

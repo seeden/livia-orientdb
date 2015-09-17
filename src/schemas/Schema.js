@@ -1,5 +1,5 @@
 import { Schema } from 'livia';
-import Type from '../types';
+import Types from '../types';
 
 function getDefaultClassName() {
   return this._className;
@@ -35,7 +35,7 @@ export function prepareSchema(schema) {
   schema.add({
     '@type': { type: String, readonly: true, metadata: true, constant: 'd' },
     '@class': { type: String, readonly: true, metadata: true, constant: getDefaultClassName},
-    '@rid': { type: Type.RID, readonly: true, metadata: true, isRecordID: true },
+    '@rid': { type: Types.RID, readonly: true, metadata: true, isRecordID: true },
     '@version': { type: Number, readonly: true, metadata: true },
     '@fieldTypes': { type: String, readonly: true, metadata: true }
   });
@@ -70,7 +70,7 @@ export default class OrientSchema extends Schema {
 
   convertType(type) {
     if (type && type.isDocumentClass) {
-      return Type.Linked;
+      return Types.Linked;
     }
 
     return super.convertType(type);
