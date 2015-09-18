@@ -297,6 +297,15 @@ var OrientDBQuery = (function (_Query) {
         query = query.skip(this._skip);
       }
 
+      if (this._populate.length) {
+        // transform to fetch
+        var _fetch = this._populate.map(function (field) {
+          return field + ':0';
+        }).join(' ');
+
+        this._fetchPlan = this._fetchPlan ? _fetch + ' ' + this._fetchPlan : _fetch;
+      }
+
       if (this._fetchPlan) {
         query = query.fetch(this._fetchPlan);
       }

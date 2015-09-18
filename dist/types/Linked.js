@@ -41,7 +41,12 @@ var Linked = (function (_RID) {
       if (value instanceof _livia.Document) {
         return value;
       } else if (_lodash2['default'].isPlainObject(value)) {
-        return new this.options.type(value);
+        var Doc = this.getDocumentClass();
+        if (!Doc) {
+          throw new Error('Document is not defined for property ' + this.name);
+        }
+
+        return new Doc(value);
       }
 
       return _get(Object.getPrototypeOf(Linked.prototype), '_serialize', this).call(this, value);
@@ -53,7 +58,7 @@ var Linked = (function (_RID) {
         return this._value.get(path);
       }
 
-      _get(Object.getPrototypeOf(Linked.prototype), 'get', this).call(this, path);
+      return _get(Object.getPrototypeOf(Linked.prototype), 'get', this).call(this, path);
     }
   }, {
     key: 'set',
@@ -62,46 +67,60 @@ var Linked = (function (_RID) {
         return this._value.set(path, value);
       }
 
-      _get(Object.getPrototypeOf(Linked.prototype), 'set', this).call(this, path, value);
+      return _get(Object.getPrototypeOf(Linked.prototype), 'set', this).call(this, path, value);
     }
   }, {
-    key: 'toJSON',
+    key: 'setAsOriginal',
+    value: function setAsOriginal() {
+      _get(Object.getPrototypeOf(Linked.prototype), 'setAsOriginal', this).call(this);
 
-    // END - copy from livia linked
-
-    value: function toJSON() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var value = this._value;
-
-      if (value instanceof _livia.Document) {
-        var json = value.toJSON(options);
-        if ((options.update || options.create) && value.get('@rid')) {
-          return json['@rid'];
-        }
-
-        return json;
+      if (this._value instanceof _livia.Document) {
+        return this._value.setAsCreated();
       }
 
-      return _get(Object.getPrototypeOf(Linked.prototype), 'toJSON', this).call(this, options);
+      return this;
+    }
+
+    // END - copy from livia linked
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      var _this = this;
+
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      return this._preDeserialize(function (value) {
+        if (value instanceof _livia.Document) {
+          var obj = value.toJSON(options);
+          if ((options.update || options.create) && value.get('@rid')) {
+            return obj['@rid'];
+          }
+
+          return obj;
+        }
+
+        return _get(Object.getPrototypeOf(Linked.prototype), 'toJSON', _this).call(_this, options);
+      }, options.disableDefault);
     }
   }, {
     key: 'toObject',
     value: function toObject() {
+      var _this2 = this;
+
       var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      var value = this._value;
+      return this._preDeserialize(function (value) {
+        if (value instanceof _livia.Document) {
+          var obj = value.toObject(options);
+          if ((options.update || options.create) && value.get('@rid')) {
+            return obj['@rid'];
+          }
 
-      if (value instanceof _livia.Document) {
-        var obj = value.toObject(options);
-        if ((options.update || options.create) && value.get('@rid')) {
-          return obj['@rid'];
+          return obj;
         }
 
-        return obj;
-      }
-
-      return _get(Object.getPrototypeOf(Linked.prototype), 'toObject', this).call(this, options);
+        return _get(Object.getPrototypeOf(Linked.prototype), 'toObject', _this2).call(_this2, options);
+      }, options.disableDefault);
     }
   }, {
     key: 'isModified',

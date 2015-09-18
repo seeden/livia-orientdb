@@ -249,6 +249,17 @@ export default class OrientDBQuery extends Query {
       query = query.skip(this._skip);
     }
 
+    if (this._populate.length) {
+      // transform to fetch
+      const fetch = this._populate.map(function(field) {
+        return `${field}:0`;
+      }).join(' ');
+
+      this._fetchPlan = this._fetchPlan
+        ? `${fetch} ${this._fetchPlan}`
+        : fetch;
+    }
+
     if (this._fetchPlan) {
       query = query.fetch(this._fetchPlan);
     }

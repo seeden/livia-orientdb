@@ -8,7 +8,12 @@ export default class Linked extends RID {
     if (value instanceof Document) {
       return value;
     } else if (_.isPlainObject(value)) {
-      return new this.options.type(value);
+      const Doc = this.getDocumentClass();
+      if (!Doc) {
+        throw new Error(`Document is not defined for property ${this.name}`);
+      }
+
+      return new Doc(value);
     }
 
     return super._serialize(value);
@@ -19,7 +24,7 @@ export default class Linked extends RID {
       return this._value.get(path);
     }
 
-    super.get(path);
+    return super.get(path);
   }
 
   set(path, value) {
@@ -27,7 +32,7 @@ export default class Linked extends RID {
       return this._value.set(path, value);
     }
 
-    super.set(path, value);
+    return super.set(path, value);
   }
 
   get isModified() {
@@ -37,36 +42,47 @@ export default class Linked extends RID {
 
     return super.isModified;
   }
-  // END - copy from livia linked
 
-  toJSON(options = {}) {
-    const value = this._value;
+  setAsOriginal() {
+    super.setAsOriginal();
 
-    if (value instanceof Document) {
-      const json = value.toJSON(options);
-      if ((options.update || options.create) && value.get('@rid')) {
-        return json['@rid'];
-      }
-
-      return json;
+    if (this._value instanceof Document) {
+      return this._value.setAsCreated();
     }
 
-    return super.toJSON(options);
+    return this;
+  }
+
+
+  // END - copy from livia linked
+  toJSON(options = {}) {
+    return this._preDeserialize((value) => {
+      if (value instanceof Document) {
+        const obj = value.toJSON(options);
+        if ((options.update || options.create) && value.get('@rid')) {
+          return obj['@rid'];
+        }
+
+        return obj;
+      }
+
+      return super.toJSON(options);
+    }, options.disableDefault);
   }
 
   toObject(options = {}) {
-    const value = this._value;
+    return this._preDeserialize((value) => {
+      if (value instanceof Document) {
+        const obj = value.toObject(options);
+        if ((options.update || options.create) && value.get('@rid')) {
+          return obj['@rid'];
+        }
 
-    if (value instanceof Document) {
-      const obj = value.toObject(options);
-      if ((options.update || options.create) && value.get('@rid')) {
-        return obj['@rid'];
+        return obj;
       }
 
-      return obj;
-    }
-
-    return super.toObject(options);
+      return super.toObject(options);
+    }, options.disableDefault);
   }
 
   static getPropertyConfig(prop) {

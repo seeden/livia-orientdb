@@ -831,6 +831,32 @@ describe('RID', function() {
 
       done();
     });
+
+    const comment = new Comment({
+      user: { name: 'user1' },
+      users: [{ name: 'user2' }],
+      usersSet: [{ name: 'user3' }],
+      userDirect: { name: 'user4' },
+      usersDirect: [{ name: 'user5' }],
+      usersSetDirect: [{ name: 'user6' }],
+      userEmbedded: { name: 'user7' },
+      usersEmbedded: [{ name: 'user8' }],
+      usersSetEmbedded: [{ name: 'user9' }],
+      value: 5
+    });
+
+    const json = comment.toJSON();
+    json.user.should.containEql({ name: 'user1' });
+    json.users[0].should.containEql({ name: 'user2' });
+    json.usersSet[0].should.containEql({ name: 'user3' });
+
+    json.userDirect.should.containEql({ name: 'user4' });
+    json.usersDirect[0].should.containEql({ name: 'user5' });
+    json.usersSetDirect[0].should.containEql({ name: 'user6' });
+
+    json.userEmbedded.should.containEql({ name: 'user7' });
+    json.usersEmbedded[0].should.containEql({ name: 'user8' });
+    json.usersSetEmbedded[0].should.containEql({ name: 'user9' });
   });
 });
 
