@@ -93,7 +93,7 @@ describe('Connection', function() {
       host: 'localhost',
         port: 2424,
         username: 'root',
-        password: 'hello'
+        password: 'poklop943!'
     }, 'GratefulDeadConcerts');
 
     connection = new Livia(adapter, function(err) {
@@ -263,7 +263,13 @@ describe('Connection', function() {
       user.get('points').should.equal(45);
       user.get('address.street').should.equal('Svabska');
 
-      done();
+      user.save(function(err) {
+        if (err) {
+          throw err;
+        }
+
+        done();
+      });
     });
   });
 
@@ -275,7 +281,7 @@ describe('Connection', function() {
         throw err;
       }
 
-      total.should.equal(30);
+      total.should.equal(45);
 
       done();
     });
