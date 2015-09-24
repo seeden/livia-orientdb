@@ -263,6 +263,7 @@ var OrientDBAdapter = (function (_Adapter) {
 
           var schemaProp = schema.getPath(propName);
           var SchemaType = schema.getSchemaType(propName);
+
           var type = SchemaType.getDbType(schemaProp);
 
           if (schemaProp.options.metadata || schemaProp.options.ensure === false) {

@@ -227,6 +227,7 @@ export default class OrientDBAdapter extends Adapter {
 
           const schemaProp = schema.getPath(propName);
           const SchemaType = schema.getSchemaType(propName);
+
           const type = SchemaType.getDbType(schemaProp);
 
           if (schemaProp.options.metadata || schemaProp.options.ensure === false) {

@@ -62,12 +62,21 @@ var Linked = (function (_RID) {
     }
   }, {
     key: 'set',
-    value: function set(path, value) {
+    value: function set(path, value, setAsOriginal) {
       if (this._value instanceof _livia.Document) {
-        return this._value.set(path, value);
+        return this._value.set(path, value, setAsOriginal);
       }
 
-      return _get(Object.getPrototypeOf(Linked.prototype), 'set', this).call(this, path, value);
+      return _get(Object.getPrototypeOf(Linked.prototype), 'set', this).call(this, path, value, setAsOriginal);
+    }
+  }, {
+    key: 'isModified',
+    value: function isModified(path) {
+      if (this._value instanceof _livia.Document) {
+        return this._value.isModified(path);
+      }
+
+      return _get(Object.getPrototypeOf(Linked.prototype), 'isModified', this).call(this, path);
     }
   }, {
     key: 'setAsOriginal',
@@ -75,7 +84,7 @@ var Linked = (function (_RID) {
       _get(Object.getPrototypeOf(Linked.prototype), 'setAsOriginal', this).call(this);
 
       if (this._value instanceof _livia.Document) {
-        return this._value.setAsCreated();
+        return this._value.setAsOriginal(true);
       }
 
       return this;
@@ -121,15 +130,6 @@ var Linked = (function (_RID) {
 
         return _get(Object.getPrototypeOf(Linked.prototype), 'toObject', _this2).call(_this2, options);
       }, options.disableDefault);
-    }
-  }, {
-    key: 'isModified',
-    get: function get() {
-      if (this._value instanceof _livia.Document) {
-        return this._value.isModified();
-      }
-
-      return _get(Object.getPrototypeOf(Linked.prototype), 'isModified', this);
     }
   }], [{
     key: 'getPropertyConfig',

@@ -23,6 +23,13 @@ function stripslashes(str) {
 }
 
 export default class OrientDBQuery extends Query {
+  constructor(model) {
+    super(model);
+
+    this._increment = [];
+    this._addToSet = [];
+  }
+
   prepareValue(value) {
     if (value && value instanceof Document && value.get('@rid')) {
       return value.get('@rid');
@@ -51,6 +58,36 @@ export default class OrientDBQuery extends Query {
     }
 
     return super.options(options);
+  }
+
+  increment(prop, value) {
+    this._increment.push({ prop, value });
+  }
+
+  addToSet(prop, value) {
+    this._addToSet.push({ prop, value });
+  }
+
+  set(doc) {
+    if (doc.$inc) {
+      const inc = doc.$inc;
+      delete doc.$inc;
+
+      Object.keys(inc).forEach((propName) => {
+        this.increment(propName, inc[propName]);
+      });
+    }
+
+    if (doc.$addToSet) {
+      const addToSet = doc.$addToSet;
+      delete doc.$addToSet;
+
+      Object.keys(addToSet).forEach((propName) => {
+        this.addToSet(propName, addToSet[propName]);
+      });
+    }
+
+    return super.set(doc);
   }
 
   // fix contains for collections
@@ -221,6 +258,18 @@ export default class OrientDBQuery extends Query {
       }
 
       query.set(this._set);
+    }
+
+    if (this._increment.length) {
+      this._increment.forEach(function(item) {
+        query.increment(item.prop, item.value);
+      });
+    }
+
+    if (this._addToSet.length) {
+      this._addToSet.forEach(function(item) {
+        query.add(item.prop, item.value);
+      });
     }
 
     if (this._upsert) {

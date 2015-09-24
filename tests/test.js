@@ -173,6 +173,8 @@ describe('Connection', function() {
     }, {
       name: 'Zlatko Fedor 2',
       address: {
+        '@type': 'document',
+        '@class': 'UserAAddress',
         street: 'Huskova 19'
       }
     }, {
@@ -186,7 +188,7 @@ describe('Connection', function() {
       should.exist(userSaved);
 
       userSaved.remove(function(err2){
-        if(err2) {
+        if (err2) {
           throw err2;
         }
 
@@ -315,7 +317,9 @@ describe('Connection', function() {
 describe('V', function() {
   it('should be able to create model Person extended from V', function(done) {
     var personSchema = new Vertex({
-      name: { type: String }
+      name: { type: String },
+      value: { type: Number, default: 0 },
+      tags: { type: [String], isSet: true }
     });
 
     var Person = connection.model('Person', personSchema, function(err) {
@@ -437,11 +441,17 @@ describe('E', function() {
     });
   });
 
-  it('should be able to update vertex p1', function(done) {
+  it('should be able to update vertex p1 and use increment', function(done) {
     var Person = connection.model('Person');
 
     Person.update(p1, {
-      name: 'Adam'
+      name: 'Adam',
+      $inc: {
+        value: 21
+      },
+      $addToSet: {
+        tags: ['456', '888']
+      }
     }, function(err, total) {
       if(err) {
         throw err;
@@ -449,7 +459,16 @@ describe('E', function() {
 
       total.should.equal(1);
 
-      done();
+      Person.findOne(p1, function(err, person) {
+        if(err) {
+          throw err;
+        }
+
+        person.value.should.equal(21);
+        person.tags.toJSON().should.containDeep(['456', '888']);
+
+        done();
+      });
     });
   });
 
@@ -746,17 +765,19 @@ describe('RID', function() {
         type: Schema.Types.ObjectId,
         ref: 'User'
       }],
-      usersSet: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        set: true
-      }],
+      usersSet: {
+        type: [{
+          type: Schema.Types.ObjectId,
+          ref: 'User'
+        }],
+        isSet: true
+      },
       userDirect: { type: User, required: true },
       usersDirect: [User],
-      usersSetDirect: [{
-        type: User,
-        set: true
-      }],
+      usersSetDirect: {
+        type: [User],
+        isSet: true
+      },
 
       userEmbedded: {
         name: { type: String },
@@ -766,13 +787,13 @@ describe('RID', function() {
         name: { type: String },
         firstName: String
       }],
-      usersSetEmbedded: [{
-        type: {
+      usersSetEmbedded: {
+        type: [{
           name: { type: String },
           firstName: String
-        },
-        set: true
-      }],
+        }],
+        isSet: true
+      },
       value: { type: Number, default: 2 }
     });
 
@@ -857,6 +878,13 @@ describe('RID', function() {
     json.userEmbedded.should.containEql({ name: 'user7' });
     json.usersEmbedded[0].should.containEql({ name: 'user8' });
     json.usersSetEmbedded[0].should.containEql({ name: 'user9' });
+
+    comment.setAsOriginal();
+
+    comment.toObject({
+      metadata: true,
+      modified: true
+    }).should.containEql({});
   });
 });
 

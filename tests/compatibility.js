@@ -27,7 +27,6 @@ describe('Mongoose compatibility', function() {
     imagesEmpty: [{
       size: { type : String }
     }]
-
   };
 
   var subSchema = {

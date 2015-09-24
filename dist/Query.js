@@ -49,10 +49,13 @@ function stripslashes(str) {
 var OrientDBQuery = (function (_Query) {
   _inherits(OrientDBQuery, _Query);
 
-  function OrientDBQuery() {
+  function OrientDBQuery(model) {
     _classCallCheck(this, OrientDBQuery);
 
-    _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'constructor', this).apply(this, arguments);
+    _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'constructor', this).call(this, model);
+
+    this._increment = [];
+    this._addToSet = [];
   }
 
   _createClass(OrientDBQuery, [{
@@ -89,6 +92,45 @@ var OrientDBQuery = (function (_Query) {
       }
 
       return _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'options', this).call(this, _options);
+    }
+  }, {
+    key: 'increment',
+    value: function increment(prop, value) {
+      this._increment.push({ prop: prop, value: value });
+    }
+  }, {
+    key: 'addToSet',
+    value: function addToSet(prop, value) {
+      this._addToSet.push({ prop: prop, value: value });
+    }
+  }, {
+    key: 'set',
+    value: function set(doc) {
+      var _this = this;
+
+      if (doc.$inc) {
+        (function () {
+          var inc = doc.$inc;
+          delete doc.$inc;
+
+          Object.keys(inc).forEach(function (propName) {
+            _this.increment(propName, inc[propName]);
+          });
+        })();
+      }
+
+      if (doc.$addToSet) {
+        (function () {
+          var addToSet = doc.$addToSet;
+          delete doc.$addToSet;
+
+          Object.keys(addToSet).forEach(function (propName) {
+            _this.addToSet(propName, addToSet[propName]);
+          });
+        })();
+      }
+
+      return _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'set', this).call(this, doc);
     }
 
     // fix contains for collections
@@ -158,7 +200,7 @@ var OrientDBQuery = (function (_Query) {
   }, {
     key: 'fixEmbeddedEscape',
     value: function fixEmbeddedEscape(record, isChild) {
-      var _this = this;
+      var _this2 = this;
 
       if (!_lodash2['default'].isObject(record)) {
         return record;
@@ -168,7 +210,7 @@ var OrientDBQuery = (function (_Query) {
         var value = record[key];
 
         if (_lodash2['default'].isObject(value)) {
-          record[key] = _this.fixEmbeddedEscape(value, true);
+          record[key] = _this2.fixEmbeddedEscape(value, true);
           return;
         }
 
@@ -187,7 +229,7 @@ var OrientDBQuery = (function (_Query) {
   }, {
     key: 'exec',
     value: function exec() {
-      var _this2 = this;
+      var _this3 = this;
 
       var callback = arguments.length <= 0 || arguments[0] === undefined ? function () {} : arguments[0];
 
@@ -271,6 +313,18 @@ var OrientDBQuery = (function (_Query) {
         query.set(this._set);
       }
 
+      if (this._increment.length) {
+        this._increment.forEach(function (item) {
+          query.increment(item.prop, item.value);
+        });
+      }
+
+      if (this._addToSet.length) {
+        this._addToSet.forEach(function (item) {
+          query.add(item.prop, item.value);
+        });
+      }
+
       if (this._upsert) {
         query.upsert();
       }
@@ -283,7 +337,7 @@ var OrientDBQuery = (function (_Query) {
 
       if (!this._scalar && (operation === Operation.SELECT || operation === Operation.INSERT || this._return)) {
         query = query.transform(function (record) {
-          record = _this2.fixRecord(record);
+          record = _this3.fixRecord(record);
 
           return model.createDocument(record);
         });
@@ -318,8 +372,8 @@ var OrientDBQuery = (function (_Query) {
         (function () {
           var order = {};
 
-          Object.keys(_this2._sort).forEach(function (key) {
-            var value = _this2._sort[key];
+          Object.keys(_this3._sort).forEach(function (key) {
+            var value = _this3._sort[key];
             order[key] = value === 'asc' || value === 'ascending' || value === 1 ? 'ASC' : 'DESC';
           });
 
@@ -334,11 +388,11 @@ var OrientDBQuery = (function (_Query) {
           return callback(null, results);
         }
 
-        if (_this2._first || _this2._scalar) {
+        if (_this3._first || _this3._scalar) {
           results = results[0];
         }
 
-        if (_this2._scalar && results) {
+        if (_this3._scalar && results) {
           var keys = Object.keys(results).filter(function (item) {
             return item[0] !== '@';
           });
@@ -346,8 +400,8 @@ var OrientDBQuery = (function (_Query) {
           if (keys.length) {
             results = results[keys[0]];
 
-            if (_this2._scalarCast && results !== null && typeof results !== 'undefined') {
-              results = _this2._scalarCast(results);
+            if (_this3._scalarCast && results !== null && typeof results !== 'undefined') {
+              results = _this3._scalarCast(results);
             }
           }
         }
