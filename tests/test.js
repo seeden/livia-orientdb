@@ -93,7 +93,7 @@ describe('Connection', function() {
       host: 'localhost',
         port: 2424,
         username: 'root',
-        password: 'poklop943!'
+        password: 'hello'
     }, 'GratefulDeadConcerts');
 
     connection = new Livia(adapter, function(err) {
