@@ -93,7 +93,7 @@ describe('Connection', function() {
       host: 'localhost',
         port: 2424,
         username: 'root',
-        password: 'hello'
+        password: 'poklop943!'
     }, 'GratefulDeadConcerts');
 
     connection = new Livia(adapter, function(err) {
@@ -560,7 +560,7 @@ describe('RID', function() {
         address:
          { city: 'Kosice',
            street: 'Huskova 19',
-           '@type': 'd',
+           '@type': 'document',
            '@class': 'UserAAddress',
            zip: null },
         tags: [ 'Test' ],
@@ -578,7 +578,7 @@ describe('RID', function() {
         address:
          { city: 'Kosice',
            street: 'Huskova 19',
-           '@type': 'd',
+           '@type': 'document',
            '@class': 'UserAAddress',
            zip: null },
         tags: [ 'Test' ],
@@ -597,6 +597,8 @@ describe('RID', function() {
     });
 
     const json = like1.toJSON({ metadata: true });
+
+
     json.user.should.containEql({
       '@rid': user.get('@rid').toString(),
       '@class': 'User'
@@ -611,8 +613,6 @@ describe('RID', function() {
       '@class': 'Like',
       user: json.user['@rid']
     });
-
-
 
     const obj = like1.toObject({ metadata: true });
     obj.user.should.containEql({

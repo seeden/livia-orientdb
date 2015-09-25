@@ -100,12 +100,13 @@ var Linked = (function (_RID) {
 
       return this._preDeserialize(function (value) {
         if (value instanceof _livia.Document) {
-          var obj = value.toJSON(options);
           if ((options.update || options.create) && value.get('@rid')) {
-            return obj['@rid'];
+            var rid = value.get('@rid');
+
+            return rid && rid.toString ? rid.toString() : rid;
           }
 
-          return obj;
+          return value.toJSON(options);;
         }
 
         return _get(Object.getPrototypeOf(Linked.prototype), 'toJSON', _this).call(_this, options);
@@ -120,12 +121,11 @@ var Linked = (function (_RID) {
 
       return this._preDeserialize(function (value) {
         if (value instanceof _livia.Document) {
-          var obj = value.toObject(options);
           if ((options.update || options.create) && value.get('@rid')) {
-            return obj['@rid'];
+            return value.get('@rid');
           }
 
-          return obj;
+          return value.toObject(options);
         }
 
         return _get(Object.getPrototypeOf(Linked.prototype), 'toObject', _this2).call(_this2, options);

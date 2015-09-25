@@ -57,12 +57,15 @@ export default class Linked extends RID {
   toJSON(options = {}) {
     return this._preDeserialize((value) => {
       if (value instanceof Document) {
-        const obj = value.toJSON(options);
         if ((options.update || options.create) && value.get('@rid')) {
-          return obj['@rid'];
+          const rid = value.get('@rid');
+
+          return rid && rid.toString
+            ? rid.toString()
+            : rid;
         }
 
-        return obj;
+        return value.toJSON(options);;
       }
 
       return super.toJSON(options);
@@ -72,12 +75,11 @@ export default class Linked extends RID {
   toObject(options = {}) {
     return this._preDeserialize((value) => {
       if (value instanceof Document) {
-        const obj = value.toObject(options);
         if ((options.update || options.create) && value.get('@rid')) {
-          return obj['@rid'];
+          return value.get('@rid');
         }
 
-        return obj;
+        return value.toObject(options);
       }
 
       return super.toObject(options);
