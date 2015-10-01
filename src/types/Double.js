@@ -5,15 +5,7 @@ import { Types } from 'livia';
   http://www.w3schools.com/js/js_numbers.asp
 */
 
-export default class DoubleType extends Types.Type {
-  _serialize(value) {
-    return Number(value);
-  }
-
-  _deserialize(value) {
-    return value;
-  }
-
+export default class DoubleType extends Types.Number {
   static toString() {
     return 'Double';
   }

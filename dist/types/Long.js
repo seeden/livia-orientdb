@@ -19,8 +19,8 @@ var _livia = require('livia');
   http://www.w3schools.com/js/js_numbers.asp
 */
 
-var LongType = (function (_Types$Type) {
-  _inherits(LongType, _Types$Type);
+var LongType = (function (_Types$Number) {
+  _inherits(LongType, _Types$Number);
 
   function LongType() {
     _classCallCheck(this, LongType);
@@ -28,17 +28,7 @@ var LongType = (function (_Types$Type) {
     _get(Object.getPrototypeOf(LongType.prototype), 'constructor', this).apply(this, arguments);
   }
 
-  _createClass(LongType, [{
-    key: '_serialize',
-    value: function _serialize(value) {
-      return Number(value);
-    }
-  }, {
-    key: '_deserialize',
-    value: function _deserialize(value) {
-      return value;
-    }
-  }], [{
+  _createClass(LongType, null, [{
     key: 'toString',
     value: function toString() {
       return 'Long';
@@ -51,7 +41,7 @@ var LongType = (function (_Types$Type) {
   }]);
 
   return LongType;
-})(_livia.Types.Type);
+})(_livia.Types.Number);
 
 exports['default'] = LongType;
 module.exports = exports['default'];

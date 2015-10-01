@@ -87,11 +87,30 @@ export default class OrientSchema extends Schema {
     return OrientSchema;
   }
 
-  convertType(type) {
-    if (type && type.isDocumentClass) {
+  convertType(type, options = {}) {
+    if (!type) {
+      return super.convertType(type, options);
+    }
+
+    // todo it can be removed in next version
+    if (type.isDocumentClass) {
       return Types.Linked;
     }
 
-    return super.convertType(type);
+    if (type === Number) {
+      if (options.integer) {
+        return Types.Integer;
+      } else if (options.long) {
+        return Types.Long;
+      } else if (options.float) {
+        return Types.Float;
+      } else if (options.short) {
+        return Types.Short;
+      } else if (options.byte) {
+        return Types.Byte;
+      }
+    }
+
+    return super.convertType(type, options);
   }
 }

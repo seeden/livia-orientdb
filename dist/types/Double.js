@@ -19,8 +19,8 @@ var _livia = require('livia');
   http://www.w3schools.com/js/js_numbers.asp
 */
 
-var DoubleType = (function (_Types$Type) {
-  _inherits(DoubleType, _Types$Type);
+var DoubleType = (function (_Types$Number) {
+  _inherits(DoubleType, _Types$Number);
 
   function DoubleType() {
     _classCallCheck(this, DoubleType);
@@ -28,17 +28,7 @@ var DoubleType = (function (_Types$Type) {
     _get(Object.getPrototypeOf(DoubleType.prototype), 'constructor', this).apply(this, arguments);
   }
 
-  _createClass(DoubleType, [{
-    key: '_serialize',
-    value: function _serialize(value) {
-      return Number(value);
-    }
-  }, {
-    key: '_deserialize',
-    value: function _deserialize(value) {
-      return value;
-    }
-  }], [{
+  _createClass(DoubleType, null, [{
     key: 'toString',
     value: function toString() {
       return 'Double';
@@ -51,7 +41,7 @@ var DoubleType = (function (_Types$Type) {
   }]);
 
   return DoubleType;
-})(_livia.Types.Type);
+})(_livia.Types.Number);
 
 exports['default'] = DoubleType;
 module.exports = exports['default'];
