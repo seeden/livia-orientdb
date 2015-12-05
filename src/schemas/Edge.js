@@ -15,13 +15,13 @@ export default class Edge extends Schema.Edge {
     // add default properties
     this.add({
       'in': { type: RIDType, required: true, notNull: true }, // from
-      'out': { type: RIDType, required: true, notNull: true }  // to
+      'out': { type: RIDType, required: true, notNull: true },  // to
     });
 
     if (options.unique) {
       this.index({
         'in': 1,
-        'out': 1
+        'out': 1,
       }, { unique: true });
     }
   }

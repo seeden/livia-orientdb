@@ -10,13 +10,9 @@ export default class OrientDBAdapter extends Adapter {
   constructor(options, dbOptions) {
     super(options);
 
-    if (typeof dbOptions === 'string') {
-      dbOptions = {
-        name: dbOptions
-      };
-    }
-
-    this._dbOptions = dbOptions;
+    this._dbOptions = typeof dbOptions === 'string'
+      ? { name: dbOptions }
+      : dbOptions;
   }
 
   get dbOptions() {
@@ -63,11 +59,11 @@ export default class OrientDBAdapter extends Adapter {
     const schema = model.schema;
 
     waterfall([
-      function(cb) {
+      (cb) => {
         // todo speed up for each class is same
-        db.index.list(true).then(function(indexes) {
+        db.index.list(true).then((indexes) => {
           // filter indexes for current class
-          indexes = indexes.filter(function(index) {
+          const filteredIndexes = indexes.filter((index) => {
             const def = index.definition;
             if (!def || def.className !== className) {
               return false;
@@ -76,16 +72,16 @@ export default class OrientDBAdapter extends Adapter {
             return true;
           });
 
-          cb(null, indexes);
+          cb(null, filteredIndexes);
         }, cb);
       },
       // remove unused indexes
-      function(indexes, cb) {
+      (indexes, cb) => {
         if (!model.options.dropUnusedIndexes) {
           return cb(null, indexes);
         }
 
-        each(indexes, function(index, cb2) {
+        each(indexes, (index, cb2) => {
           const { name } = index;
 
           let schemaIndexName = name;
@@ -100,10 +96,10 @@ export default class OrientDBAdapter extends Adapter {
 
           log('Deleting unused index: ' + name);
 
-          db.index.drop(name).then(function() {
+          db.index.drop(name).then(() => {
             cb2(null);
           }, cb2);
-        }, function(err) {
+        }, (err) => {
           if (err) {
             return cb(err);
           }
@@ -112,16 +108,16 @@ export default class OrientDBAdapter extends Adapter {
         });
       },
       // add non exists indexes
-      function(indexes, cb) {
+      (indexes, cb) => {
         const configs = [];
 
-        each(schema.indexNames, function(indexName, cb3) {
-          const index = schema.getIndex(indexName);
+        each(schema.indexNames, (orientIndexName, cb3) => {
+          const index = schema.getIndex(orientIndexName);
 
           // add class name to indexName
-          indexName = className + '.' + indexName;
+          const indexName = className + '.' + orientIndexName;
 
-          const oIndex = indexes.find(function(index2) {
+          const oIndex = indexes.find((index2) => {
             return index2.name === indexName;
           });
 
@@ -130,7 +126,7 @@ export default class OrientDBAdapter extends Adapter {
           }
 
           let canCreate = true;
-          Object.keys(index.properties).forEach(function(name) {
+          Object.keys(index.properties).forEach((name) => {
             if (name.indexOf('.') !== -1) {
               canCreate = false;
             }
@@ -149,62 +145,62 @@ export default class OrientDBAdapter extends Adapter {
             name: indexName,
             properties: Object.keys(index.properties),
             type: adapter.getIndexType(index),
-            metadata: index.metadata
+            metadata: index.metadata,
           };
 
           configs.push(config);
 
-          db.index.create(config).then(function() {
+          db.index.create(config).then(() => {
             cb3(null);
           }, cb3);
-        }, function(err) {
+        }, (err) => {
           if (err) {
             return cb(err);
           }
 
           cb(null, indexes);
         });
-      }
+      },
     ], callback);
   }
 
-  ensureClass(model, callback = function() {}) {
+  ensureClass(model, callback = () => {}) {
     const db = this.native;
     const schema = model.schema;
     const className = model.name;
 
     waterfall([
       // prepare base class
-      function(cb) {
-        db.class.get(className).then(function(OClass) {
+      (cb) => {
+        db.class.get(className).then((OClass) => {
           cb(null, OClass);
-        }, function() {
-          db.class.create(className, schema.extendClassName, model.options.cluster, model.options.abstract).then(function(OClass) {
+        }, () => {
+          db.class.create(className, schema.extendClassName, model.options.cluster, model.options.abstract).then((OClass) => {
             cb(null, OClass);
           }, cb);
         });
       },
       // retrive a current properties
-      function(OClass, cb) {
-        OClass.property.list().then(function(properties) {
+      (OClass, cb) => {
+        OClass.property.list().then((properties) => {
           cb(null, OClass, properties);
         }, cb);
       },
       // drop unused properties
-      function(OClass, oProperties, cb) {
+      (OClass, oProperties, cb) => {
         if (!model.options.dropUnusedProperties) {
           return cb(null, OClass, oProperties);
         }
 
-        each(oProperties, function(prop, cb2) {
+        each(oProperties, (prop, cb2) => {
           if (schema.has(prop.name)) {
             return cb2(null);
           }
 
-          OClass.property.drop(prop.name).then(function() {
+          OClass.property.drop(prop.name).then(() => {
             cb2(null);
           }, cb2);
-        }, function(err) {
+        }, (err) => {
           if (err) {
             return cb(err);
           }
@@ -213,11 +209,11 @@ export default class OrientDBAdapter extends Adapter {
         });
       },
       // add new properties
-      function(OClass, oProperties, cb) {
+      (OClass, oProperties, cb) => {
         const properties = schema.propertyNames();
 
-        each(properties, function(propName, cb2) {
-          const prop = oProperties.find(function(p) {
+        each(properties, (propName, cb2) => {
+          const prop = oProperties.find((p) => {
             return p.name === propName;
           });
 
@@ -236,7 +232,7 @@ export default class OrientDBAdapter extends Adapter {
 
           waterfall([
             // create LinkedClass for embedded documents
-            function(cb3) {
+            (cb3) => {
               if (!SchemaType.isAbstract(schemaProp)) {
                 return cb3(null, null);
               }
@@ -251,22 +247,22 @@ export default class OrientDBAdapter extends Adapter {
               }
 
               return new Model(abstractClassName, embeddedSchema, model.connection, {
-                'abstract': true
+                'abstract': true,
               }, cb3);
-            }, function(model2, cb3) {
+            }, (model2, cb3) => {
               const options = schemaProp.options;
               const additionalConfig = SchemaType.getPropertyConfig(schemaProp);
 
               const config = {
                 name: propName,
-                type: type,
+                type,
                 mandatory: options.mandatory || options.required || false,
                 min: typeof options.min !== 'undefined' ? options.min : null,
                 max: typeof options.max !== 'undefined' ? options.max : null,
                 collate: options.collate || 'default',
                 notNull: options.notNull || false,
                 readonly: options.readonly || false,
-                ...additionalConfig
+                ...additionalConfig,
               };
 
               if (model2) {
@@ -277,13 +273,13 @@ export default class OrientDBAdapter extends Adapter {
                 delete config.linkedType;
               }
 
-              OClass.property.create(config).then(function(oProperty) {
+              OClass.property.create(config).then((oProperty) => {
                 oProperties.push(oProperty);
                 cb3(null);
               }, cb3);
-            }
+            },
           ], cb2);
-        }, function(err) {
+        }, (err) => {
           if (err) {
             return cb(err);
           }
@@ -293,7 +289,7 @@ export default class OrientDBAdapter extends Adapter {
       },
       (OClass, oProperties, cb) => {
         this.ensureIndex(model, OClass, cb);
-      }
+      },
     ], (err) => {
       if (err) {
         return callback(err);

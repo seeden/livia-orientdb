@@ -65,7 +65,7 @@ export default class Linked extends RID {
             : rid;
         }
 
-        return value.toJSON(options);;
+        return value.toJSON(options);
       }
 
       return super.toJSON(options);
@@ -89,13 +89,13 @@ export default class Linked extends RID {
   static getPropertyConfig(prop) {
     if (prop.type.isDocumentClass) {
       return {
-        linkedClass: prop.type.modelName
+        linkedClass: prop.type.modelName,
       };
     }
 
     if (prop.options && prop.options.ref) {
       return {
-        linkedClass: prop.options.ref
+        linkedClass: prop.options.ref,
       };
     }
 

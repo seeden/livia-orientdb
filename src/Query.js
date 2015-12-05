@@ -8,16 +8,16 @@ const Operation = Query.Operation;
 
 function stripslashes(str) {
   return (str + '')
-    .replace(/\\(.?)/g, function(s, n1) {
+    .replace(/\\(.?)/g, (s, n1) => {
       switch (n1) {
-        case '\\':
-          return '\\';
-        case '0':
-          return '\u0000';
-        case '':
-          return '';
-        default:
-          return n1;
+      case '\\':
+        return '\\';
+      case '0':
+        return '\u0000';
+      case '':
+        return '';
+      default:
+        return n1;
       }
     });
 }
@@ -40,7 +40,7 @@ export default class OrientDBQuery extends Query {
 
   scalar(useScalar, castFn) {
     if (typeof castFn === 'undefined') {
-      castFn = Number;
+      return super.scalar(useScalar, Number);
     }
 
     return super.scalar(useScalar, castFn);
@@ -49,7 +49,7 @@ export default class OrientDBQuery extends Query {
   options(options = {}) {
     if (options.new) {
       options.return = 'AFTER @this';
-      delete options['new'];
+      delete options.new;
 
       if (options.upsert) {
         options.scalar = false;
@@ -125,7 +125,7 @@ export default class OrientDBQuery extends Query {
       let subConditions = conditions[parent] || {};
       if (!_.isPlainObject(subConditions)) {
         subConditions = {
-          $eq: subConditions
+          $eq: subConditions,
         };
       }
 
@@ -148,7 +148,7 @@ export default class OrientDBQuery extends Query {
   fixRecord(record) {
     const options = this.model.connection.adapter.options;
     if (options.fixEmbeddedEscape) {
-      record = this.fixEmbeddedEscape(record);
+      return this.fixEmbeddedEscape(record);
     }
 
     return record;
@@ -179,7 +179,7 @@ export default class OrientDBQuery extends Query {
     return new OrientjsQuery(this.model.native);
   }
 
-  exec(callback = function() {}) {
+  exec(callback = () => {}) {
     const model = this.model;
     const schema = model.schema;
     const operation = this._operation;
@@ -199,29 +199,33 @@ export default class OrientDBQuery extends Query {
     }
 
     const select = this._select || '*';
+    const escapedTarget = typeof target === 'string' && target[0] !== '#'
+      ? '`' + target + '`'
+      : target;
+
 
     const isGraph = schema instanceof Schema.Graph;
     if (isGraph) {
       const graphType = schema instanceof Schema.Edge ? 'EDGE' : 'VERTEX';
 
       if (operation === Operation.INSERT) {
-        query = query.create(graphType, target);
+        query = query.create(graphType, escapedTarget);
       } else if (operation === Operation.DELETE) {
-        query = query.delete(graphType, target);
+        query = query.delete(graphType, escapedTarget);
       } else if (operation === Operation.SELECT) {
-        query = query.select(select).from(target);
+        query = query.select(select).from(escapedTarget);
       } else {
         query = query.update(target);
       }
     } else {
       if (operation === Operation.INSERT) {
-        query = query.insert().into(target);
+        query = query.insert().into(escapedTarget);
       } else if (operation === Operation.DELETE) {
-        query = query.delete().from(target);
+        query = query.delete().from(escapedTarget);
       } else if (operation === Operation.SELECT) {
-        query = query.select(select).from(target);
+        query = query.select(select).from(escapedTarget);
       } else {
-        query = query.update(target);
+        query = query.update(escapedTarget);
       }
     }
 
@@ -257,17 +261,19 @@ export default class OrientDBQuery extends Query {
         }
       }
 
-      query.set(this._set);
+      if (Object.keys(this._set).length) {
+        query.set(this._set);
+      }
     }
 
     if (this._increment.length) {
-      this._increment.forEach(function(item) {
+      this._increment.forEach((item) => {
         query.increment(item.prop, item.value);
       });
     }
 
     if (this._addToSet.length) {
-      this._addToSet.forEach(function(item) {
+      this._addToSet.forEach((item) => {
         query.add(item.prop, item.value);
       });
     }
@@ -276,7 +282,7 @@ export default class OrientDBQuery extends Query {
       query.upsert();
     }
 
-    this._operators.forEach(function(operator) {
+    this._operators.forEach((operator) => {
       query = query[operator.type](operator.query);
     });
 
@@ -300,9 +306,7 @@ export default class OrientDBQuery extends Query {
 
     if (this._populate.length) {
       // transform to fetch
-      const fetch = this._populate.map(function(field) {
-        return `${field}:0`;
-      }).join(' ');
+      const fetch = this._populate.map((field) => `${field}:0`).join(' ');
 
       this._fetchPlan = this._fetchPlan
         ? `${fetch} ${this._fetchPlan}`
@@ -342,7 +346,7 @@ export default class OrientDBQuery extends Query {
       }
 
       if (this._scalar && results) {
-        const keys = Object.keys(results).filter(function(item) {
+        const keys = Object.keys(results).filter((item) => {
           return item[0] !== '@';
         });
 
@@ -356,7 +360,7 @@ export default class OrientDBQuery extends Query {
       }
 
       callback(null, results);
-    }, function(err) {
+    }, (err) => {
       log('Error: ' + err.message);
       callback(err);
     });

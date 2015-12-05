@@ -7,18 +7,15 @@ function getDefaultClassName() {
 
 function aggregatedFunction(fnName, field, conditions, callback) {
   if (typeof conditions === 'function') {
-    callback = conditions;
-    conditions = {};
+    return aggregatedFunction(fnName, field, {}, conditions);
   }
 
   if (typeof field === 'function') {
-    callback = field;
-    conditions = {};
-    field = '*';
+    return aggregatedFunction(fnName, '*', {}, field);
   }
 
   if (typeof field === 'undefined') {
-    field = '*';
+    return aggregatedFunction(fnName, '*', conditions, callback);
   }
 
   const query = this
@@ -39,7 +36,7 @@ export function prepareSchema(schema) {
       metadata: true,
       default: 'd',
       subCreate: true,
-      subUpdate: true
+      subUpdate: true,
     },
     '@class': {
       type: String,
@@ -47,30 +44,30 @@ export function prepareSchema(schema) {
       metadata: true,
       default: getDefaultClassName,
       subCreate: true,
-      subUpdate: true
+      subUpdate: true,
     },
     '@rid': {
       type: Types.RID,
       readonly: true,
       metadata: true,
-      isRecordID: true
+      isRecordID: true,
     },
     '@version': { type: Number, readonly: true, metadata: true },
-    '@fieldTypes': { type: String, readonly: true, metadata: true }
+    '@fieldTypes': { type: String, readonly: true, metadata: true },
   });
 
-  schema.virtual('rid', { metadata: true }).get(function() {
+  schema.virtual('rid', { metadata: true }).get(function getRid() {
     return this.get('@rid');
   });
 
-  schema.virtual('_id', { metadata: true }).get(function() {
+  schema.virtual('_id', { metadata: true }).get(function getID() {
     return this.get('@rid');
   });
 
   schema.statics.aggregatedFunction = aggregatedFunction;
 
-  mathFunctions.forEach(function(fnName) {
-    schema.statics[fnName] = function(field, conditions, callback) {
+  mathFunctions.forEach((fnName) => {
+    schema.statics[fnName] = function mathFunction(field, conditions, callback) {
       return this.aggregatedFunction(fnName, field, conditions, callback);
     };
   });

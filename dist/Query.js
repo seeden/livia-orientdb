@@ -6,7 +6,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -71,7 +71,7 @@ var OrientDBQuery = (function (_Query) {
     key: 'scalar',
     value: function scalar(useScalar, castFn) {
       if (typeof castFn === 'undefined') {
-        castFn = Number;
+        return _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'scalar', this).call(this, useScalar, Number);
       }
 
       return _get(Object.getPrototypeOf(OrientDBQuery.prototype), 'scalar', this).call(this, useScalar, castFn);
@@ -192,7 +192,7 @@ var OrientDBQuery = (function (_Query) {
     value: function fixRecord(record) {
       var options = this.model.connection.adapter.options;
       if (options.fixEmbeddedEscape) {
-        record = this.fixEmbeddedEscape(record);
+        return this.fixEmbeddedEscape(record);
       }
 
       return record;
@@ -252,29 +252,30 @@ var OrientDBQuery = (function (_Query) {
       }
 
       var select = this._select || '*';
+      var escapedTarget = typeof target === 'string' && target[0] !== '#' ? '`' + target + '`' : target;
 
       var isGraph = schema instanceof _livia.Schema.Graph;
       if (isGraph) {
         var graphType = schema instanceof _livia.Schema.Edge ? 'EDGE' : 'VERTEX';
 
         if (operation === Operation.INSERT) {
-          query = query.create(graphType, target);
+          query = query.create(graphType, escapedTarget);
         } else if (operation === Operation.DELETE) {
-          query = query['delete'](graphType, target);
+          query = query['delete'](graphType, escapedTarget);
         } else if (operation === Operation.SELECT) {
-          query = query.select(select).from(target);
+          query = query.select(select).from(escapedTarget);
         } else {
           query = query.update(target);
         }
       } else {
         if (operation === Operation.INSERT) {
-          query = query.insert().into(target);
+          query = query.insert().into(escapedTarget);
         } else if (operation === Operation.DELETE) {
-          query = query['delete']().from(target);
+          query = query['delete']().from(escapedTarget);
         } else if (operation === Operation.SELECT) {
-          query = query.select(select).from(target);
+          query = query.select(select).from(escapedTarget);
         } else {
-          query = query.update(target);
+          query = query.update(escapedTarget);
         }
       }
 
@@ -310,7 +311,9 @@ var OrientDBQuery = (function (_Query) {
           }
         }
 
-        query.set(this._set);
+        if (Object.keys(this._set).length) {
+          query.set(this._set);
+        }
       }
 
       if (this._increment.length) {

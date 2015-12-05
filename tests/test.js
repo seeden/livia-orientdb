@@ -8,10 +8,10 @@ import { waterfall } from "async";
 
 const { Linked, ObjectId } = Schema.Types;
 
-var connection = null;
+let connection = null;
 
 describe('Schema', function() {
-  var schema = null;
+  let schema = null;
 
   it('should be able to create simple schema', function() {
     schema = new Schema({
@@ -93,7 +93,7 @@ describe('Connection', function() {
       host: 'localhost',
         port: 2424,
         username: 'root',
-        password: 'hello'
+        password: 'hello',
     }, 'GratefulDeadConcerts');
 
     connection = new Livia(adapter, function(err) {
@@ -560,7 +560,7 @@ describe('RID', function() {
         address:
          { city: 'Kosice',
            street: 'Huskova 19',
-           '@type': 'document',
+           '@type': 'd',
            '@class': 'UserAAddress',
            zip: null },
         tags: [ 'Test' ],
@@ -578,7 +578,7 @@ describe('RID', function() {
         address:
          { city: 'Kosice',
            street: 'Huskova 19',
-           '@type': 'document',
+           '@type': 'd',
            '@class': 'UserAAddress',
            zip: null },
         tags: [ 'Test' ],

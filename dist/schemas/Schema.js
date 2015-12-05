@@ -6,7 +6,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 exports.prepareSchema = prepareSchema;
 
@@ -26,25 +26,49 @@ function getDefaultClassName() {
   return this._className;
 }
 
-function aggregatedFunction(fnName, field, conditions, callback) {
-  if (typeof conditions === 'function') {
-    callback = conditions;
-    conditions = {};
+function aggregatedFunction(_x5, _x6, _x7, _x8) {
+  var _this = this;
+
+  var _again2 = true;
+
+  _function2: while (_again2) {
+    var fnName = _x5,
+        field = _x6,
+        conditions = _x7,
+        callback = _x8;
+    _again2 = false;
+
+    if (typeof conditions === 'function') {
+      _x5 = fnName;
+      _x6 = field;
+      _x7 = {};
+      _x8 = conditions;
+      _again2 = true;
+      continue _function2;
+    }
+
+    if (typeof field === 'function') {
+      _x5 = fnName;
+      _x6 = '*';
+      _x7 = {};
+      _x8 = field;
+      _again2 = true;
+      continue _function2;
+    }
+
+    if (typeof field === 'undefined') {
+      _x5 = fnName;
+      _x6 = '*';
+      _x7 = conditions;
+      _x8 = callback;
+      _again2 = true;
+      continue _function2;
+    }
+
+    var query = _this.find(conditions).select(fnName + '(' + field + ')').scalar(true);
+
+    return callback ? query.exec(callback) : query;
   }
-
-  if (typeof field === 'function') {
-    callback = field;
-    conditions = {};
-    field = '*';
-  }
-
-  if (typeof field === 'undefined') {
-    field = '*';
-  }
-
-  var query = this.find(conditions).select(fnName + '(' + field + ')').scalar(true);
-
-  return callback ? query.exec(callback) : query;
 }
 
 var mathFunctions = ['count', 'avg', 'sum', 'min', 'max', 'median', 'percentile', 'variance', 'stddev'];
@@ -77,18 +101,18 @@ function prepareSchema(schema) {
     '@fieldTypes': { type: String, readonly: true, metadata: true }
   });
 
-  schema.virtual('rid', { metadata: true }).get(function () {
+  schema.virtual('rid', { metadata: true }).get(function getRid() {
     return this.get('@rid');
   });
 
-  schema.virtual('_id', { metadata: true }).get(function () {
+  schema.virtual('_id', { metadata: true }).get(function getID() {
     return this.get('@rid');
   });
 
   schema.statics.aggregatedFunction = aggregatedFunction;
 
   mathFunctions.forEach(function (fnName) {
-    schema.statics[fnName] = function (field, conditions, callback) {
+    schema.statics[fnName] = function mathFunction(field, conditions, callback) {
       return this.aggregatedFunction(fnName, field, conditions, callback);
     };
   });
