@@ -28,10 +28,22 @@ var _typesIndex2 = _interopRequireDefault(_typesIndex);
 
 var _livia = require('livia');
 
+var _constantsCollate = require('./constants/Collate');
+
+var _constantsCollate2 = _interopRequireDefault(_constantsCollate);
+
+// deprecated
 _schemasSchema2['default'].Edge = _schemasEdge2['default'];
 _schemasSchema2['default'].Vertex = _schemasVertex2['default'];
 
+//deprecated
+exports['default'] = _Adapter2['default'];
+
+//valid export
 exports.Schema = _schemasSchema2['default'];
 exports.Types = _typesIndex2['default'];
 exports.Index = _livia.Index;
-exports['default'] = _Adapter2['default'];
+exports.Collate = _constantsCollate2['default'];
+exports.Adapter = _Adapter2['default'];
+exports.Vertex = _schemasVertex2['default'];
+exports.Edge = _schemasEdge2['default'];

@@ -41,11 +41,11 @@
     "eslint": "node ./node_modules/eslint/bin/eslint.js ./src || exit 0"
   },
   "dependencies": {
-    "async": "^1.5.0",
+    "async": "^1.5.2",
     "debug": "^2.2.0",
     "keymirror": "^0.1.1",
-    "lodash": "^3.10.1",
-    "orientjs": "^2.1.0"
+    "lodash": "^4.6.1",
+    "orientjs": "^2.1.11"
   },
   "devDependencies": {
     "babel": "^5.8.23",
@@ -58,7 +58,7 @@
     "gulp-babel": "^5.2.1",
     "gulp-mocha": "^2.2.0",
     "gulp-util": "^3.0.6",
-    "livia": "^0.6.22",
+    "livia": "^0.6.33",
     "mongoose": "^4.2.9",
     "should": "^7.1.0"
   },

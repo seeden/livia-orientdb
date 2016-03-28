@@ -1,7 +1,8 @@
 import { Query, Schema, Document } from 'livia';
 import OrientjsQuery from 'orientjs/lib/db/query';
 import debug from 'debug';
-import _ from 'lodash';
+import isPlainObject from 'lodash/isPlainObject';
+import isObject from 'lodash/isObject';
 
 const log = debug('livia-orientdb:query');
 const Operation = Query.Operation;
@@ -123,7 +124,7 @@ export default class OrientDBQuery extends Query {
       delete conditions[propertyName];
 
       let subConditions = conditions[parent] || {};
-      if (!_.isPlainObject(subConditions)) {
+      if (!isPlainObject(subConditions)) {
         subConditions = {
           $eq: subConditions,
         };
@@ -155,14 +156,14 @@ export default class OrientDBQuery extends Query {
   }
 
   fixEmbeddedEscape(record, isChild) {
-    if (!_.isObject(record)) {
+    if (!isObject(record)) {
       return record;
     }
 
     Object.keys(record).forEach(key => {
       const value = record[key];
 
-      if (_.isObject(value)) {
+      if (isObject(value)) {
         record[key] = this.fixEmbeddedEscape(value, true);
         return;
       }

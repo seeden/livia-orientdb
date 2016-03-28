@@ -18,9 +18,9 @@ var _RID2 = require('./RID');
 
 var _RID3 = _interopRequireDefault(_RID2);
 
-var _lodash = require('lodash');
+var _lodashIsPlainObject = require('lodash/isPlainObject');
 
-var _lodash2 = _interopRequireDefault(_lodash);
+var _lodashIsPlainObject2 = _interopRequireDefault(_lodashIsPlainObject);
 
 var _livia = require('livia');
 
@@ -40,7 +40,7 @@ var Linked = (function (_RID) {
     value: function _serialize(value) {
       if (value instanceof _livia.Document) {
         return value;
-      } else if (_lodash2['default'].isPlainObject(value)) {
+      } else if ((0, _lodashIsPlainObject2['default'])(value)) {
         var Doc = this.getDocumentClass();
         if (!Doc) {
           throw new Error('Document is not defined for property ' + this.name);

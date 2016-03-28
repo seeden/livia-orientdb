@@ -24,9 +24,13 @@ var _debug = require('debug');
 
 var _debug2 = _interopRequireDefault(_debug);
 
-var _lodash = require('lodash');
+var _lodashIsPlainObject = require('lodash/isPlainObject');
 
-var _lodash2 = _interopRequireDefault(_lodash);
+var _lodashIsPlainObject2 = _interopRequireDefault(_lodashIsPlainObject);
+
+var _lodashIsObject = require('lodash/isObject');
+
+var _lodashIsObject2 = _interopRequireDefault(_lodashIsObject);
 
 var log = (0, _debug2['default'])('livia-orientdb:query');
 var Operation = _livia.Query.Operation;
@@ -166,7 +170,7 @@ var OrientDBQuery = (function (_Query) {
         delete conditions[propertyName];
 
         var subConditions = conditions[parent] || {};
-        if (!_lodash2['default'].isPlainObject(subConditions)) {
+        if (!(0, _lodashIsPlainObject2['default'])(subConditions)) {
           subConditions = {
             $eq: subConditions
           };
@@ -202,14 +206,14 @@ var OrientDBQuery = (function (_Query) {
     value: function fixEmbeddedEscape(record, isChild) {
       var _this2 = this;
 
-      if (!_lodash2['default'].isObject(record)) {
+      if (!(0, _lodashIsObject2['default'])(record)) {
         return record;
       }
 
       Object.keys(record).forEach(function (key) {
         var value = record[key];
 
-        if (_lodash2['default'].isObject(value)) {
+        if ((0, _lodashIsObject2['default'])(value)) {
           record[key] = _this2.fixEmbeddedEscape(value, true);
           return;
         }

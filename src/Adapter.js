@@ -3,6 +3,7 @@ import Query from './Query';
 import orientjs from 'orientjs';
 import { waterfall, each } from 'async';
 import debug from 'debug';
+import { Collate } from './constants/Collate';
 
 const log = debug('livia-orientdb:adapter');
 
@@ -259,7 +260,7 @@ export default class OrientDBAdapter extends Adapter {
                 mandatory: options.mandatory || options.required || false,
                 min: typeof options.min !== 'undefined' ? options.min : null,
                 max: typeof options.max !== 'undefined' ? options.max : null,
-                collate: options.collate || 'default',
+                collate: options.collate || Collate.DEFAULT,
                 notNull: options.notNull || false,
                 readonly: options.readonly || false,
                 ...additionalConfig,

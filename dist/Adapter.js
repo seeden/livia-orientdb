@@ -32,6 +32,8 @@ var _debug = require('debug');
 
 var _debug2 = _interopRequireDefault(_debug);
 
+var _constantsCollate = require('./constants/Collate');
+
 var log = (0, _debug2['default'])('livia-orientdb:adapter');
 
 var OrientDBAdapter = (function (_Adapter) {
@@ -293,7 +295,7 @@ var OrientDBAdapter = (function (_Adapter) {
               mandatory: options.mandatory || options.required || false,
               min: typeof options.min !== 'undefined' ? options.min : null,
               max: typeof options.max !== 'undefined' ? options.max : null,
-              collate: options.collate || 'default',
+              collate: options.collate || _constantsCollate.Collate.DEFAULT,
               notNull: options.notNull || false,
               readonly: options.readonly || false
             }, additionalConfig);

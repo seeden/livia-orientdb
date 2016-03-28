@@ -1,5 +1,5 @@
 import RID from './RID';
-import _ from 'lodash';
+import isPlainObject from 'lodash/isPlainObject';
 import { Document } from 'livia';
 
 export default class Linked extends RID {
@@ -7,7 +7,7 @@ export default class Linked extends RID {
   _serialize(value) {
     if (value instanceof Document) {
       return value;
-    } else if (_.isPlainObject(value)) {
+    } else if (isPlainObject(value)) {
       const Doc = this.getDocumentClass();
       if (!Doc) {
         throw new Error(`Document is not defined for property ${this.name}`);
