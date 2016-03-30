@@ -3,7 +3,7 @@ import Query from './Query';
 import orientjs from 'orientjs';
 import { waterfall, each } from 'async';
 import debug from 'debug';
-import { Collate } from './constants/Collate';
+import Collate from './constants/Collate';
 
 const log = debug('livia-orientdb:adapter');
 
