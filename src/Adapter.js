@@ -1,4 +1,4 @@
-import { Adapter, Model, Index } from 'livia';
+import { Adapter, Model, Index, Types } from 'livia';
 import Query from './Query';
 import orientjs from 'orientjs';
 import { waterfall, each } from 'async';
@@ -224,6 +224,9 @@ export default class OrientDBAdapter extends Adapter {
 
           const schemaProp = schema.getPath(propName);
           const SchemaType = schema.getSchemaType(propName);
+          if (SchemaType === Types.Mixed) {
+            return cb2(null);
+          }
 
           const type = SchemaType.getDbType(schemaProp);
 

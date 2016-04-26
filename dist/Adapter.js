@@ -261,6 +261,9 @@ var OrientDBAdapter = (function (_Adapter) {
 
           var schemaProp = schema.getPath(propName);
           var SchemaType = schema.getSchemaType(propName);
+          if (SchemaType === _livia.Types.Mixed) {
+            return cb2(null);
+          }
 
           var type = SchemaType.getDbType(schemaProp);
 
