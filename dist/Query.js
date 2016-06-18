@@ -358,6 +358,12 @@ var OrientDBQuery = (function (_Query) {
         query = query.skip(this._skip);
       }
 
+      if (this._group.length) {
+        this._group.forEach(function (item) {
+          query = query.group(item);
+        });
+      }
+
       if (this._populate.length) {
         // transform to fetch
         var _fetch = this._populate.map(function (field) {

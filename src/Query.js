@@ -305,6 +305,12 @@ export default class OrientDBQuery extends Query {
       query = query.skip(this._skip);
     }
 
+    if (this._group.length) {
+      this._group.forEach((item) => {
+        query = query.group(item);
+      });
+    }
+
     if (this._populate.length) {
       // transform to fetch
       const fetch = this._populate.map((field) => `${field}:0`).join(' ');

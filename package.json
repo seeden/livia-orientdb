@@ -1,6 +1,6 @@
 {
   "name": "livia-orientdb",
-  "version": "0.6.16",
+  "version": "0.6.17",
   "description": "OrientDB adapter for universal database driver Livia",
   "author": {
     "name": "Zlatko Fedor",
@@ -44,8 +44,8 @@
     "async": "^1.5.2",
     "debug": "^2.2.0",
     "keymirror": "^0.1.1",
-    "lodash": "^4.6.1",
-    "orientjs": "^2.1.11"
+    "lodash": "^4.13.1",
+    "orientjs": "^2.1.16"
   },
   "devDependencies": {
     "babel": "^5.8.23",
@@ -58,8 +58,8 @@
     "gulp-babel": "^5.2.1",
     "gulp-mocha": "^2.2.0",
     "gulp-util": "^3.0.6",
-    "livia": "^0.6.33",
-    "mongoose": "^4.2.9",
+    "livia": "^0.6.34",
+    "mongoose": "^4.5.0",
     "should": "^7.1.0"
   },
   "peerDependencies": {
