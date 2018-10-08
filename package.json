@@ -45,7 +45,7 @@
     "debug": "^2.2.0",
     "keymirror": "^0.1.1",
     "lodash": "^4.13.1",
-    "orientjs": "^2.1.16"
+    "orientjs": "^3.0.0"
   },
   "devDependencies": {
     "babel": "^5.8.23",
