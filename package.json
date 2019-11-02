@@ -59,7 +59,7 @@
     "gulp-mocha": "^2.2.0",
     "gulp-util": "^3.0.6",
     "livia": "^0.6.34",
-    "mongoose": "^4.5.0",
+    "mongoose": "^5.7.7",
     "should": "^7.1.0"
   },
   "peerDependencies": {
