@@ -35,17 +35,19 @@
     "node": ">= 0.10.0"
   },
   "scripts": {
-    "prepublish": "npm run build",
+    "prepublish": "npm run snyk-protect && npm run build",
     "test": "babel-node ./node_modules/gulp/bin/gulp.js test",
     "build": "node ./node_modules/gulp/bin/gulp.js build",
-    "eslint": "node ./node_modules/eslint/bin/eslint.js ./src || exit 0"
+    "eslint": "node ./node_modules/eslint/bin/eslint.js ./src || exit 0",
+    "snyk-protect": "snyk protect"
   },
   "dependencies": {
     "async": "^1.5.2",
     "debug": "^2.2.0",
     "keymirror": "^0.1.1",
     "lodash": "^4.13.1",
-    "orientjs": "^2.1.16"
+    "orientjs": "^2.1.16",
+    "snyk": "^1.317.0"
   },
   "devDependencies": {
     "babel": "^5.8.23",
@@ -64,5 +66,6 @@
   },
   "peerDependencies": {
     "livia": "0.6.x"
-  }
+  },
+  "snyk": true
 }
